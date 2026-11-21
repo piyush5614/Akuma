@@ -2,9 +2,10 @@
 
 ## Brand direction
 
-FairFarm is calm, practical, and confident: near-black text on an off-white
-canvas, white cards, one lime accent, and clear freshness labels. The interface
-prioritizes the net amount a farmer takes home rather than raw market price.
+FairFarm is calm, practical, and confident: deep forest ink on a warm ivory
+canvas, translucent soft-glass cards, a lime action accent, and clear freshness
+labels. The interface prioritizes the net amount a farmer takes home rather
+than raw market price.
 
 ## Tokens
 
@@ -14,15 +15,18 @@ theme must mirror it.
 
 - Display: 48px, title: 32px, heading: 24px, body: 16px, caption: 13px.
 - Spacing: 4, 8, 16, 24, 32, 48px.
-- Cards use a 20px radius; pills use 999px.
+- Cards use a 26px radius; inner controls use 14–22px radius; pills use 999px.
 - Latin uses Inter; Marathi and Hindi use Noto Sans Devanagari.
 
 ## Components and states
 
-- **Primary button:** ink background, white label, lime circular arrow affordance.
+- **Primary button:** lime surface, ink label, pill shape, elevated shadow, and
+  a floating/sticky position when it completes a high-value flow.
 - **Secondary button:** white surface, ink border, same minimum touch target.
-- **Card:** white surface, soft line border, 20px radius, clear heading and
-  supporting value.
+- **Card:** translucent surface with backdrop blur, soft line border, 26px
+  radius, clear heading and supporting value.
+- **Floating action:** one dominant action per screen; stays reachable above
+  bottom navigation on Android and becomes sticky inside long web forms.
 - **Freshness badge:** icon plus `FRESH`, `STALE`, `OLD`, or `NO_REPORT`;
   never color alone.
 - **Mandi pin:** green/amber/red icon plus a text label in the adjacent legend.
@@ -41,7 +45,7 @@ quintals.
 
 ## Motion
 
-Use short 150–220ms ease-out transitions for cards, tabs, and loading changes.
+Use short 150–220ms ease-out transitions for cards, tabs, buttons, and loading changes.
 Respect reduced-motion preferences. No animation is required to understand a
 ranking or alert.
 

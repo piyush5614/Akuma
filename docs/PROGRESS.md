@@ -85,3 +85,8 @@ results and sell guidance, and request explainable next-crop ideas using crop
 history, category preference, and water availability. The same catalogue and
 next-crop API are available to Android.
 
+The interface redesign updates the web and Android presentation with warm ivory
+surfaces, forest-green hierarchy, soft-glass cards, larger typography, rounded
+controls, elevated hover states, and floating/sticky primary actions. API and
+business behavior remain unchanged.
+

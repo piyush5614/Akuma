@@ -64,20 +64,44 @@ private fun FarmerApp() {
     var quantity by remember { mutableStateOf("10") }
     var screen by remember { mutableStateOf("home") }
     LaunchedEffect(Unit) { model.loadCrops() }
-    Scaffold(bottomBar = { NavigationBar { listOf("home" to "Home", "insights" to "Insights", "ask" to "Ask", "settings" to "Settings").forEach { (key, label) -> NavigationBarItem(selected = screen == key, onClick = { screen = key }, icon = { Text(label.take(1)) }, label = { Text(label) }) } } }) { padding ->
-        LazyColumn(Modifier.padding(padding).padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            item { Text("FairFarm", style = MaterialTheme.typography.labelLarge); Text(if (screen == "home") "More in your pocket." else screen.replaceFirstChar { it.uppercase() }, style = MaterialTheme.typography.headlineLarge) }
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
+        floatingActionButton = {
+            if (screen == "home") ExtendedFloatingActionButton(
+                onClick = { model.recommend(crop, quantity.toDoubleOrNull() ?: 10.0, farmerLocation) },
+                containerColor = MaterialTheme.colorScheme.secondary,
+                contentColor = MaterialTheme.colorScheme.onSecondary,
+                text = { Text("Find best market") },
+                icon = { Text("↗") },
+            )
+        },
+        bottomBar = { NavigationBar { listOf("home" to "Home", "insights" to "Insights", "ask" to "Ask", "settings" to "Settings").forEach { (key, label) -> NavigationBarItem(selected = screen == key, onClick = { screen = key }, icon = { Text(label.take(1)) }, label = { Text(label) }) } } },
+    ) { padding ->
+        LazyColumn(Modifier.padding(padding).padding(horizontal = 20.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(16.dp), contentPadding = PaddingValues(bottom = 92.dp)) {
+            item {
+                Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary), shape = MaterialTheme.shapes.large) {
+                    Column(Modifier.padding(24.dp)) {
+                        Text("FAIRFARM", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onPrimary)
+                        Text(if (screen == "home") "More in your pocket." else screen.replaceFirstChar { it.uppercase() }, style = MaterialTheme.typography.headlineLarge, color = MaterialTheme.colorScheme.onPrimary)
+                        Text("Make every trip to the mandi count.", color = MaterialTheme.colorScheme.onPrimary.copy(alpha = .72f))
+                    }
+                }
+            }
             if (state.offline) item { Text("Offline: showing the last available result.", color = MaterialTheme.colorScheme.error) }
             if (screen == "home") {
-                item { Text(if (usingLiveLocation) "Using your current location" else "Using demo location · allow GPS for nearby results", color = MaterialTheme.colorScheme.onSurfaceVariant) }
-                item { Text("What do you grow?", style = MaterialTheme.typography.titleMedium) }
-                item { LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) { items(listOf("vegetable", "grain", "fruit")) { option -> FilterChip(selected = category == option, onClick = { category = option; state.crops.firstOrNull { it.category == option }?.let { crop = it.id } }, label = { Text(option.replaceFirstChar { it.uppercase() }) }) } } }
-                item { LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) { items(state.crops.filter { it.category == category }) { option -> FilterChip(selected = crop == option.id, onClick = { crop = option.id }, label = { Text("${option.name["en"] ?: option.id} · ${option.name["hi"] ?: ""}") }) } } }
-                item { OutlinedTextField(value = crop, onValueChange = { crop = it }, label = { Text("Crop") }, modifier = Modifier.fillMaxWidth()) }
-                item { OutlinedTextField(value = quantity, onValueChange = { quantity = it }, label = { Text("Quantity (quintal)") }, modifier = Modifier.fillMaxWidth()) }
-                item { Button(onClick = { model.recommend(crop, quantity.toDoubleOrNull() ?: 10.0, farmerLocation) }, modifier = Modifier.fillMaxWidth()) { Text("Find best mandi") } }
-                item { Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) { Text("Water:"); listOf("low", "medium", "high").forEach { option -> FilterChip(selected = water == option, onClick = { water = option }, label = { Text(option) }) } } }
-                item { OutlinedButton(onClick = { model.suggestNextCrops(category, crop, water) }, modifier = Modifier.fillMaxWidth()) { Text("Suggest my next crop") } }
+                item {
+                    Card(shape = MaterialTheme.shapes.medium) {
+                        Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                            Text(if (usingLiveLocation) "Using your current location" else "Using demo location · allow GPS for nearby results", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text("What do you grow?", style = MaterialTheme.typography.titleLarge)
+                            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) { items(listOf("vegetable", "grain", "fruit")) { option -> FilterChip(selected = category == option, onClick = { category = option; state.crops.firstOrNull { it.category == option }?.let { crop = it.id } }, label = { Text(option.replaceFirstChar { it.uppercase() }) }) } }
+                            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) { items(state.crops.filter { it.category == category }) { option -> FilterChip(selected = crop == option.id, onClick = { crop = option.id }, label = { Text("${option.name["en"] ?: option.id} · ${option.name["hi"] ?: ""}") }) } }
+                            OutlinedTextField(value = quantity, onValueChange = { quantity = it }, label = { Text("Quantity (quintal)") }, modifier = Modifier.fillMaxWidth(), shape = MaterialTheme.shapes.small)
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) { Text("Water:", modifier = Modifier.padding(top = 8.dp)); listOf("low", "medium", "high").forEach { option -> FilterChip(selected = water == option, onClick = { water = option }, label = { Text(option) }) } }
+                            OutlinedButton(onClick = { model.suggestNextCrops(category, crop, water) }, modifier = Modifier.fillMaxWidth(), shape = MaterialTheme.shapes.small) { Text("Suggest my next crop") }
+                        }
+                    }
+                }
                 state.result?.let { result -> item { Text("${result.sell_or_wait.decision}: ${result.sell_or_wait.reason["en"]}") }; items(result.recommendations) { recommendation -> MandiCard(recommendation.mandi.name, recommendation.costs.total_net_inr, recommendation.mandi.freshness) } }
                 if (state.nextCrops.isNotEmpty()) item { Column(verticalArrangement = Arrangement.spacedBy(6.dp)) { Text("Crop ideas for your farm", style = MaterialTheme.typography.titleMedium); state.nextCrops.forEach { suggestion -> Text("${state.crops.firstOrNull { it.id == suggestion.crop.crop_id }?.name?.get("en") ?: suggestion.crop.crop_id}: ${suggestion.reason}") } } }
             } else if (screen == "ask") item { ChatPanel(model, state, crop, quantity, farmerLocation) }
@@ -91,5 +115,12 @@ private fun FarmerApp() {
 
 @Composable
 private fun MandiCard(name: String, amount: String, freshness: String) {
-    Card(Modifier.fillMaxWidth()) { Column(Modifier.padding(16.dp)) { Text(name, style = MaterialTheme.typography.titleLarge); Text("₹$amount total net"); Text(freshness); Button(onClick = { /* Navigation is wired by the platform intent in the detail screen. */ }) { Text("Navigate") } } }
+    Card(Modifier.fillMaxWidth(), shape = MaterialTheme.shapes.medium) {
+        Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) { Text(name, style = MaterialTheme.typography.titleLarge); Text(freshness, color = MaterialTheme.colorScheme.primary) }
+            Text("₹$amount total net", style = MaterialTheme.typography.headlineSmall)
+            Text("Backend-ranked return after transport and fees.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+            OutlinedButton(onClick = { /* Navigation is wired by the platform intent in the detail screen. */ }, shape = MaterialTheme.shapes.small) { Text("Open directions") }
+        }
+    }
 }

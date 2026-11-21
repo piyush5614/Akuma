@@ -13,3 +13,31 @@ select, input { border: 1px solid var(--color-line); border-radius: 12px; backgr
 .guided-flow { margin-bottom:20px; padding:24px; }.guided-title { display:flex; justify-content:space-between; align-items:start; gap:20px; }.guided-title h3 { margin:8px 0 18px; }.guided-title > span { color:var(--color-muted); font-size:12px; }.guided-label { margin:12px 0 8px; color:var(--color-muted); font-size:12px; font-weight:700; }.guided-options, .crop-options, .guided-actions { display:flex; flex-wrap:wrap; gap:8px; }.guided-options button, .crop-options button, .guided-actions > button:not(.primary) { border:1px solid var(--color-line); border-radius:14px; padding:10px 14px; background:var(--color-canvas); cursor:pointer; color:var(--color-ink); }.guided-options button.selected, .crop-options button.selected { border-color:var(--color-ink); background:var(--color-accent); }.crop-options button { display:flex; flex-direction:column; align-items:start; gap:3px; }.crop-options small { color:var(--color-muted); font-size:10px; }.guided-grid { display:grid; grid-template-columns:1.2fr 1fr 1fr; gap:10px; margin:16px 0; }.guided-grid label, .guided-actions label { display:grid; gap:6px; color:var(--color-muted); font-size:12px; }.guided-grid input, .guided-actions select { width:100%; }.guided-actions { align-items:end; }.guided-actions label { min-width:150px; }.market-result, .next-crops { display:grid; gap:10px; margin-top:18px; padding:16px; border-radius:16px; background:#f1f3ef; }.market-result { grid-template-columns:1fr auto; }.market-result span, .next-crops span { display:block; margin-top:4px; color:var(--color-muted); font-size:12px; }.next-crops > div { display:grid; gap:2px; padding-top:8px; border-top:1px solid var(--color-line); }
 .login-page { min-height:100vh; display:grid; place-items:center; padding:24px; }.login-card { width:min(100%, 440px); padding:40px; border:1px solid var(--color-line); border-radius:var(--radius-card); background:var(--color-surface); }.login-card h1 { font-size:42px; margin:24px 0 8px; }.login-card form { display:grid; gap:16px; margin-top:28px; }.login-card label { display:grid; gap:8px; color:var(--color-muted); font-size:13px; }.login-card button { width:100%; margin-top:8px; }
 @media (max-width:760px) { aside { width:72px; padding:24px 12px; } aside .brand { font-size:0; margin:0 auto 32px; } nav a { justify-content:center; padding:0; } nav a:not(.active) { font-size:0; } nav a svg { flex:none; } .demo-label { display:none; } .shell main { padding:28px 18px; } header { margin-bottom:30px; }.hero { padding:24px; display:block; }.hero-number { text-align:left; margin-top:24px; }.row { grid-template-columns:1fr auto; }.row span:nth-child(2) { display:none; }.india-map { height:320px; }.map-legend small { width:100%; margin-left:0; }.saathi-heading { display:block; }.saathi-location { margin-top:14px; }.chat-shell { min-height:calc(100vh - 220px); }.chat-message { max-width:94%; }.chat-messages { padding:28px 18px; }.starter-row { padding-left:18px; padding-right:18px; }.chat-composer { margin-left:18px; margin-right:18px; }.guided-grid { grid-template-columns:1fr; }.market-result { grid-template-columns:1fr; } }
+
+/* Premium agriculture surface system */
+body { background: radial-gradient(circle at 85% 0%, rgba(201,239,99,.18), transparent 30rem), var(--color-canvas); }
+.shell main { padding-top: 34px; }
+aside { background: rgba(255,255,255,.62); backdrop-filter: blur(20px); border-right-color: rgba(20,37,27,.08); }
+.brand { letter-spacing: -.04em; }
+nav a { transition: transform .2s ease, background .2s ease, box-shadow .2s ease; }
+nav a.active, nav a:hover { box-shadow: 0 8px 22px rgba(20,37,27,.08); transform: translateX(3px); }
+.card, .stats article, .login-card { background: rgba(255,255,255,.72); backdrop-filter: blur(18px); box-shadow: 0 18px 45px rgba(20,37,27,.06); }
+.hero { position: relative; overflow: hidden; min-height: 220px; background: linear-gradient(135deg,#14251b 0%,#274d36 100%); box-shadow: 0 22px 50px rgba(20,37,27,.18); }
+.hero::after { content: ""; position:absolute; width:260px; height:260px; right:-70px; top:-80px; border-radius:50%; background:rgba(201,239,99,.18); }
+.hero > * { position:relative; z-index:1; }
+.hero h2 { font-size: clamp(30px, 4vw, 48px); letter-spacing: -.05em; }
+.stats article { min-height: 130px; }
+.primary, .card button { box-shadow: 0 10px 24px rgba(20,37,27,.16); transition: transform .2s ease, box-shadow .2s ease; }
+.primary:hover, .card button:hover { transform: translateY(-3px); box-shadow: 0 15px 28px rgba(20,37,27,.2); }
+.primary, .guided-actions .primary { background: var(--color-accent); color: var(--color-ink); font-weight: 800; }
+.guided-actions { position: sticky; bottom: 18px; z-index: 4; padding: 12px; border: 1px solid rgba(255,255,255,.8); border-radius: 22px; background: rgba(244,243,236,.76); box-shadow: 0 12px 30px rgba(20,37,27,.11); backdrop-filter: blur(18px); }
+.guided-flow { border: 1px solid rgba(255,255,255,.9); }
+.guided-options button, .crop-options button, .guided-actions > button:not(.primary) { box-shadow: 0 5px 14px rgba(20,37,27,.06); transition: transform .2s ease, border-color .2s ease; }
+.guided-options button:hover, .crop-options button:hover, .guided-actions > button:not(.primary):hover { transform: translateY(-2px); }
+.chat-shell { border-color: rgba(255,255,255,.9); box-shadow: 0 24px 60px rgba(20,37,27,.1); }
+.chat-header { padding: 28px 32px; }
+.chat-messages { background: linear-gradient(180deg,rgba(248,250,242,.5),rgba(255,255,255,.2)); }
+.chat-composer { background: rgba(255,255,255,.8); }
+.chat-composer button { background: var(--color-accent); color: var(--color-ink); box-shadow: 0 8px 20px rgba(20,37,27,.18); }
+.market-result, .next-crops { border: 1px solid rgba(20,37,27,.06); box-shadow: inset 0 1px 0 rgba(255,255,255,.8); }
+.map-card, .india-map { border-radius: 26px; }

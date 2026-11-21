@@ -146,3 +146,12 @@
   feature; Android retains its existing device-location permission path and
   allows the existing fallback.
 
+## Interface redesign
+
+- The redesign uses warm ivory, deep forest green, lime accent, translucent
+  glass-like cards, and large editorial headings across web and Android.
+- Primary actions are intentionally elevated and floating: sticky inside long
+  web forms and an `ExtendedFloatingActionButton` above Android navigation.
+- The redesign is presentation-only; backend contracts, pricing logic, and
+  recommendation ranking remain unchanged.
+
