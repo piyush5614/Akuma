@@ -17,6 +17,7 @@ import com.fairfarm.data.ApiFactory
 import com.fairfarm.data.Coordinates
 import com.fairfarm.domain.FairFarmRepository
 import com.fairfarm.ui.FairFarmViewModel
+import com.fairfarm.ui.ChatPanel
 import com.fairfarm.ui.theme.FairFarmTheme
 
 class MainActivity : ComponentActivity() {
@@ -42,7 +43,7 @@ private fun FarmerApp() {
                 item { OutlinedTextField(value = quantity, onValueChange = { quantity = it }, label = { Text("Quantity (quintal)") }, modifier = Modifier.fillMaxWidth()) }
                 item { Button(onClick = { model.recommend(crop, quantity.toDoubleOrNull() ?: 10.0, Coordinates(18.52, 73.86)) }, modifier = Modifier.fillMaxWidth()) { Text("Find best mandi") } }
                 state.result?.let { result -> item { Text("${result.sell_or_wait.decision}: ${result.sell_or_wait.reason["en"]}") }; items(result.recommendations) { recommendation -> MandiCard(recommendation.mandi.name, recommendation.costs.total_net_inr, recommendation.mandi.freshness) } }
-            } else if (screen == "ask") item { Text("Ask FairFarm about prices, mandis, selling, or crops.") }
+            } else if (screen == "ask") item { ChatPanel(model, state, crop, quantity) }
             else if (screen == "insights") item { Text("Seasonality and crop-profit insights will use the same backend data.") }
             else item { Text("Language, vehicle rate, water availability, and data freshness settings.") }
             if (state.loading) item { CircularProgressIndicator() }

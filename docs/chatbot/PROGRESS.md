@@ -5,7 +5,7 @@
 - [x] Part 2 - Language layer
 - [x] Part 3 - Orchestrator, providers, tools, grounding and safety
 - [x] Part 4 - API endpoints, sessions and limits
-- [ ] Part 5 - Android chat feature
+- [x] Part 5 - Android chat feature
 - [ ] Part 6 - Dashboard add-on
 - [ ] Part 7 - Evaluation, integration and docs
 
@@ -70,3 +70,13 @@ fallback, tool, demo, and request metadata.
 The chat API tests have 2 passing cases, the session/rate-limit tests have 3
 passing cases, and the full backend suite has 86 passing tests. Persistent
 session/feedback storage and dashboard analytics remain later hardening work.
+
+## Part 5 result
+
+Added Android Retrofit models and endpoints for chat, starters, and feedback;
+repository methods; ViewModel chat state with duplicate-send protection,
+session continuity, offline errors, and a 100-message in-process history; and
+the Compose Ask panel with starter prompts, send, loading, and clear-chat
+controls. The Android client still uses the existing manual location fallback.
+Room persistence, voice input/output, native data cards, and GPS context are
+explicitly deferred rather than presented as complete.

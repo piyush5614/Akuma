@@ -28,6 +28,19 @@ The checked-in Gradle wrapper is usable on Windows. The Part 10 verification
 completed `assembleDebug`, `testDebugUnitTest`, and `lintDebug`; the generated
 debug APK is copied to `artifacts/FairFarm-debug.apk`.
 
+## Saathi chat
+
+The Ask tab sends text questions to `POST /api/v1/chat` using the same backend
+as recommendations. It keeps the session id in the ViewModel, displays
+localized replies, shows loading/offline errors, blocks duplicate sends, and
+keeps the last 100 messages in the current app process. Start the backend
+before testing with questions such as `Which nearby mandi gives the best net
+return?` or `Should I sell my onion now?`.
+
+Room persistence, native voice input/output, typed native result cards, and
+GPS-derived context are planned follow-up work; the current chat screen uses
+the existing manual location fallback and text input.
+
 ## Permissions and troubleshooting
 
 The app requests internet and coarse/fine location permissions. If GPS is

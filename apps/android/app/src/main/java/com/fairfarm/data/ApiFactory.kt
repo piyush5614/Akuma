@@ -23,7 +23,7 @@ object ApiFactory {
     }
     val api: FairFarmApi = Retrofit.Builder()
         .baseUrl(BuildConfig.BASE_URL)
-        .client(OkHttpClient.Builder().connectTimeout(10, TimeUnit.SECONDS).readTimeout(10, TimeUnit.SECONDS).writeTimeout(10, TimeUnit.SECONDS).addInterceptor(retryGet).build())
+        .client(OkHttpClient.Builder().connectTimeout(10, TimeUnit.SECONDS).readTimeout(15, TimeUnit.SECONDS).writeTimeout(15, TimeUnit.SECONDS).addInterceptor(retryGet).build())
         .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
         .build().create(FairFarmApi::class.java)
 }
