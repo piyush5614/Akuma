@@ -40,6 +40,8 @@
 - Replaced the native Compose Android UI with a full-screen WebView wrapper.
   The existing web app source remains unchanged; the generated APK shows the
   same web interface on Android.
+- Enabled cleartext HTTP for the debug WebView APK and restarted the web and
+  backend services on `0.0.0.0`; both LAN endpoints return HTTP 200.
 
 Part 0 created the required directory structure, baseline configuration files,
 starter documentation, and the master prompt.
