@@ -37,6 +37,9 @@
 - Added interactive Explorer map layers and a national Regions map view.
 - Expanded Saathi intent coverage for greetings, crop planning, prices,
   trends, seasonality, sell/wait guidance, and fallback suggestions.
+- Replaced the native Compose Android UI with a full-screen WebView wrapper.
+  The existing web app source remains unchanged; the generated APK shows the
+  same web interface on Android.
 
 Part 0 created the required directory structure, baseline configuration files,
 starter documentation, and the master prompt.

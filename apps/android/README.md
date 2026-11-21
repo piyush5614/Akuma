@@ -1,5 +1,18 @@
 # FairFarm Android
 
+## Web app mobile wrapper
+
+The Android app is a full-screen WebView wrapper for the existing FairFarm web
+application. The web source in `apps/web` is used unchanged. The APK loads the
+configured web URL, preserves browser navigation with the Android back button,
+enables JavaScript and local storage, and supports the web app's location
+permission flow.
+
+The debug wrapper uses `WEB_APP_URL` from `apps/android/gradle.properties`.
+The current physical-phone value is `http://192.168.0.194:5173/`. Start the
+existing web app with `npm run dev -- --host 0.0.0.0` and the backend with
+`python -m uvicorn backend.app.main:app --host 0.0.0.0 --port 8000`.
+
 The Android farmer app uses Kotlin, Jetpack Compose Material 3, Retrofit with
 kotlinx.serialization, a repository/ViewModel boundary, Room-ready offline
 dependencies, GPS permissions, OpenStreetMap dependencies, and debug-only

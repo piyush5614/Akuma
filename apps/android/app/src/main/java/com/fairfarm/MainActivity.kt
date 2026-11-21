@@ -1,126 +1,115 @@
 package com.fairfarm
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.view.View
+import android.webkit.GeolocationPermissions
+import android.webkit.WebChromeClient
+import android.webkit.WebResourceRequest
+import android.webkit.WebSettings
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.google.android.gms.location.LocationServices
-import com.fairfarm.data.ApiFactory
-import com.fairfarm.data.Coordinates
-import com.fairfarm.domain.FairFarmRepository
-import com.fairfarm.ui.FairFarmViewModel
-import com.fairfarm.ui.ChatPanel
-import com.fairfarm.ui.theme.FairFarmTheme
 
 class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) { super.onCreate(savedInstanceState); setContent { FairFarmTheme { FarmerApp() } } }
-}
+    private lateinit var webView: WebView
+    private var pendingGeolocationOrigin: String? = null
+    private var pendingGeolocationCallback: GeolocationPermissions.Callback? = null
 
-@Composable
-private fun FarmerApp() {
-    val context = androidx.compose.ui.platform.LocalContext.current
-    val fusedLocation = remember { LocationServices.getFusedLocationProviderClient(context) }
-    var farmerLocation by remember { mutableStateOf(Coordinates(18.52, 73.86)) }
-    var usingLiveLocation by remember { mutableStateOf(false) }
-    fun readLocation() {
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-            ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) return
-        fusedLocation.lastLocation.addOnSuccessListener { location ->
-            if (location != null) {
-                farmerLocation = Coordinates(location.latitude, location.longitude)
-                usingLiveLocation = true
+    private val locationPermission = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val granted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
+            permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+        val origin = pendingGeolocationOrigin
+        val callback = pendingGeolocationCallback
+        if (granted && origin != null && callback != null) {
+            callback.invoke(origin, true, false)
+        } else {
+            callback?.invoke(origin, false, false)
+        }
+        pendingGeolocationOrigin = null
+        pendingGeolocationCallback = null
+    }
+
+    @SuppressLint("SetJavaScriptEnabled")
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        webView = WebView(this)
+        webView.layoutParams = android.view.ViewGroup.LayoutParams(
+            android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+            android.view.ViewGroup.LayoutParams.MATCH_PARENT
+        )
+        webView.overScrollMode = View.OVER_SCROLL_NEVER
+        webView.settings.apply {
+            javaScriptEnabled = true
+            domStorageEnabled = true
+            databaseEnabled = true
+            mediaPlaybackRequiresUserGesture = false
+            setSupportZoom(true)
+            builtInZoomControls = true
+            displayZoomControls = false
+            cacheMode = WebSettings.LOAD_DEFAULT
+            allowFileAccess = false
+            allowContentAccess = false
+        }
+        webView.webViewClient = object : WebViewClient() {
+            override fun shouldOverrideUrlLoading(
+                view: WebView,
+                request: WebResourceRequest
+            ): Boolean {
+                return false
             }
         }
-    }
-    val locationPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
-        readLocation()
-    }
-    LaunchedEffect(Unit) {
-        val fine = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-        val coarse = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
-        if (fine || coarse) readLocation()
-        else locationPermission.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
-    }
-    val model: FairFarmViewModel = viewModel(factory = object : androidx.lifecycle.ViewModelProvider.Factory {
-        override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T = FairFarmViewModel(FairFarmRepository(ApiFactory.api)) as T
-    })
-    val state by model.state.collectAsState()
-    var crop by remember { mutableStateOf("onion") }
-    var category by remember { mutableStateOf("vegetable") }
-    var water by remember { mutableStateOf("medium") }
-    var quantity by remember { mutableStateOf("10") }
-    var screen by remember { mutableStateOf("home") }
-    LaunchedEffect(Unit) { model.loadCrops() }
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
-        floatingActionButton = {
-            if (screen == "home") ExtendedFloatingActionButton(
-                onClick = { model.recommend(crop, quantity.toDoubleOrNull() ?: 10.0, farmerLocation) },
-                containerColor = MaterialTheme.colorScheme.secondary,
-                contentColor = MaterialTheme.colorScheme.onSecondary,
-                text = { Text("Find best market") },
-                icon = { Text("↗") },
-            )
-        },
-        bottomBar = { NavigationBar { listOf("home" to "Home", "insights" to "Insights", "ask" to "Ask", "settings" to "Settings").forEach { (key, label) -> NavigationBarItem(selected = screen == key, onClick = { screen = key }, icon = { Text(label.take(1)) }, label = { Text(label) }) } } },
-    ) { padding ->
-        LazyColumn(Modifier.padding(padding).padding(horizontal = 20.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(16.dp), contentPadding = PaddingValues(bottom = 92.dp)) {
-            item {
-                Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary), shape = MaterialTheme.shapes.large) {
-                    Column(Modifier.padding(24.dp)) {
-                        Text("FAIRFARM", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onPrimary)
-                        Text(if (screen == "home") "More in your pocket." else screen.replaceFirstChar { it.uppercase() }, style = MaterialTheme.typography.headlineLarge, color = MaterialTheme.colorScheme.onPrimary)
-                        Text("Make every trip to the mandi count.", color = MaterialTheme.colorScheme.onPrimary.copy(alpha = .72f))
-                    }
+        webView.webChromeClient = object : WebChromeClient() {
+            override fun onGeolocationPermissionsShowPrompt(
+                origin: String,
+                callback: GeolocationPermissions.Callback
+            ) {
+                val fineGranted = ContextCompat.checkSelfPermission(
+                    this@MainActivity,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+                val coarseGranted = ContextCompat.checkSelfPermission(
+                    this@MainActivity,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+
+                if (fineGranted || coarseGranted) {
+                    callback.invoke(origin, true, false)
+                } else {
+                    pendingGeolocationOrigin = origin
+                    pendingGeolocationCallback = callback
+                    locationPermission.launch(
+                        arrayOf(
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION
+                        )
+                    )
                 }
             }
-            if (state.offline) item { Text("Offline: showing the last available result.", color = MaterialTheme.colorScheme.error) }
-            if (screen == "home") {
-                item {
-                    Card(shape = MaterialTheme.shapes.medium) {
-                        Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                            Text(if (usingLiveLocation) "Using your current location" else "Using demo location · allow GPS for nearby results", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            Text("What do you grow?", style = MaterialTheme.typography.titleLarge)
-                            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) { items(listOf("vegetable", "grain", "fruit")) { option -> FilterChip(selected = category == option, onClick = { category = option; state.crops.firstOrNull { it.category == option }?.let { crop = it.id } }, label = { Text(option.replaceFirstChar { it.uppercase() }) }) } }
-                            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) { items(state.crops.filter { it.category == category }) { option -> FilterChip(selected = crop == option.id, onClick = { crop = option.id }, label = { Text("${option.name["en"] ?: option.id} · ${option.name["hi"] ?: ""}") }) } }
-                            OutlinedTextField(value = quantity, onValueChange = { quantity = it }, label = { Text("Quantity (quintal)") }, modifier = Modifier.fillMaxWidth(), shape = MaterialTheme.shapes.small)
-                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) { Text("Water:", modifier = Modifier.padding(top = 8.dp)); listOf("low", "medium", "high").forEach { option -> FilterChip(selected = water == option, onClick = { water = option }, label = { Text(option) }) } }
-                            OutlinedButton(onClick = { model.suggestNextCrops(category, crop, water) }, modifier = Modifier.fillMaxWidth(), shape = MaterialTheme.shapes.small) { Text("Suggest my next crop") }
-                        }
-                    }
-                }
-                state.result?.let { result -> item { Text("${result.sell_or_wait.decision}: ${result.sell_or_wait.reason["en"]}") }; items(result.recommendations) { recommendation -> MandiCard(recommendation.mandi.name, recommendation.costs.total_net_inr, recommendation.mandi.freshness) } }
-                if (state.nextCrops.isNotEmpty()) item { Column(verticalArrangement = Arrangement.spacedBy(6.dp)) { Text("Crop ideas for your farm", style = MaterialTheme.typography.titleMedium); state.nextCrops.forEach { suggestion -> Text("${state.crops.firstOrNull { it.id == suggestion.crop.crop_id }?.name?.get("en") ?: suggestion.crop.crop_id}: ${suggestion.reason}") } } }
-            } else if (screen == "ask") item { ChatPanel(model, state, crop, quantity, farmerLocation) }
-            else if (screen == "insights") item { Text("Seasonality and crop-profit insights will use the same backend data.") }
-            else item { Text("Language, vehicle rate, water availability, and data freshness settings.") }
-            if (state.loading) item { CircularProgressIndicator() }
-            state.error?.let { message -> item { Text(message, color = MaterialTheme.colorScheme.error) } }
         }
-    }
-}
 
-@Composable
-private fun MandiCard(name: String, amount: String, freshness: String) {
-    Card(Modifier.fillMaxWidth(), shape = MaterialTheme.shapes.medium) {
-        Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) { Text(name, style = MaterialTheme.typography.titleLarge); Text(freshness, color = MaterialTheme.colorScheme.primary) }
-            Text("₹$amount total net", style = MaterialTheme.typography.headlineSmall)
-            Text("Backend-ranked return after transport and fees.", color = MaterialTheme.colorScheme.onSurfaceVariant)
-            OutlinedButton(onClick = { /* Navigation is wired by the platform intent in the detail screen. */ }, shape = MaterialTheme.shapes.small) { Text("Open directions") }
-        }
+        setContentView(webView)
+        webView.loadUrl(BuildConfig.WEB_APP_URL)
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (webView.canGoBack()) {
+                    webView.goBack()
+                } else {
+                    isEnabled = false
+                    onBackPressedDispatcher.onBackPressed()
+                }
+            }
+        })
     }
+
 }
