@@ -1,0 +1,163 @@
+from __future__ import annotations
+
+import re
+import unicodedata
+from dataclasses import dataclass, field
+from difflib import SequenceMatcher
+from pathlib import Path
+from typing import Any
+
+import yaml
+
+_GLOSSARY_PATH = Path(__file__).resolve().parents[1] / "i18n" / "glossary.yaml"
+_DEVANAGARI = re.compile(r"[\u0900-\u097f]")
+_NUMBER = re.compile(r"(?<!\w)(\d+(?:[.,]\d+)?)\s*([a-zA-Z\u0900-\u097f]*)")
+_PUNCTUATION = re.compile(r"[^\w\s\u0900-\u097f]", re.UNICODE)
+
+
+@dataclass(frozen=True)
+class GlossaryEntry:
+    canonical: str
+    aliases: tuple[str, ...]
+    conversion_to_quintal: float | None = None
+
+
+@dataclass(frozen=True)
+class ExtractedEntities:
+    crop: str | None = None
+    quantity_quintal: float | None = None
+    source_unit: str | None = None
+    market_terms: tuple[str, ...] = ()
+    time_terms: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True)
+class LanguageResult:
+    language: str
+    script: str
+    confidence: float
+
+
+@dataclass(frozen=True)
+class IntentResult:
+    intent: str
+    confidence: float
+    entities: ExtractedEntities = field(default_factory=ExtractedEntities)
+
+
+def normalize_text(message: str) -> str:
+    """Normalize user text without transliterating or changing its language."""
+    normalized = unicodedata.normalize("NFC", message).strip().lower()
+    normalized = normalized.replace("’", "'").replace("०", "0").replace("१", "1")
+    normalized = _PUNCTUATION.sub(" ", normalized)
+    return " ".join(normalized.split())
+
+
+def _load_glossary() -> tuple[GlossaryEntry, ...]:
+    raw: dict[str, Any] = yaml.safe_load(_GLOSSARY_PATH.read_text(encoding="utf-8"))
+    return tuple(
+        GlossaryEntry(
+            canonical=item["canonical"],
+            aliases=tuple(normalize_text(alias) for alias in item["aliases"]),
+            conversion_to_quintal=item.get("conversion_to_quintal"),
+        )
+        for item in raw["entries"]
+    )
+
+
+GLOSSARY = _load_glossary()
+_CROPS = {entry.canonical: entry for entry in GLOSSARY if entry.canonical in {
+    "onion", "tomato", "soybean", "wheat", "jowar", "gram", "cotton", "pomegranate"
+}}
+_UNITS = {entry.canonical: entry for entry in GLOSSARY if entry.conversion_to_quintal is not None}
+_MARKET_CANONICALS = {"market_rate", "market", "nearby"}
+_MARATHI_MARKERS = {"mazha", "mazhya", "kandyala", "kuthe", "changala", "vik", "thambu", "pike", "javalpass"}
+_HINDI_MARKERS = {"mera", "meri", "kahan", "kaise", "bechun", "sabse", "achha", "fasal"}
+_MARATHI_DEVANAGARI = {"कांदा", "कांद्याला", "टोमॅटो", "ज्वारी", "गहू", "कुठे", "जवळपास", "आता", "म्हणजे"}
+_HINDI_DEVANAGARI = {"प्याज", "टमाटर", "चना", "कहाँ", "कैसे", "फसल", "बेचूं", "सबसे"}
+
+
+def detect_language(message: str) -> LanguageResult:
+    normalized = normalize_text(message)
+    devanagari_tokens = set(_DEVANAGARI.findall(normalized))
+    del devanagari_tokens
+    tokens = set(normalized.split())
+    marathi_score = len(tokens & _MARATHI_MARKERS) + sum(token in normalized for token in _MARATHI_DEVANAGARI)
+    hindi_score = len(tokens & _HINDI_MARKERS) + sum(token in normalized for token in _HINDI_DEVANAGARI)
+    devanagari_count = len(_DEVANAGARI.findall(normalized))
+    latin_count = sum(character.isascii() and character.isalpha() for character in normalized)
+    script = "devanagari" if devanagari_count > latin_count else "latin"
+    if marathi_score == hindi_score == 0:
+        language = "en" if latin_count else "hi"
+        confidence = 0.55
+    elif marathi_score >= hindi_score:
+        language = "mr"
+        confidence = min(0.99, 0.65 + marathi_score * 0.08)
+    else:
+        language = "hi"
+        confidence = min(0.99, 0.65 + hindi_score * 0.08)
+    return LanguageResult(language=language, script=script, confidence=confidence)
+
+
+def _alias_match(text: str, entry: GlossaryEntry) -> bool:
+    if any(re.search(rf"(?<!\w){re.escape(alias)}(?!\w)", text) for alias in entry.aliases):
+        return True
+    for token in text.split():
+        if len(token) >= 4 and any(SequenceMatcher(None, token, alias).ratio() >= 0.86 for alias in entry.aliases):
+            return True
+    return False
+
+
+def extract_entities(message: str) -> ExtractedEntities:
+    normalized = normalize_text(message)
+    crop = next((entry.canonical for entry in _CROPS.values() if _alias_match(normalized, entry)), None)
+    market_terms = tuple(entry.canonical for entry in GLOSSARY if entry.canonical in _MARKET_CANONICALS and _alias_match(normalized, entry))
+    time_terms = tuple(term for term in ("today", "aaj", "आज", "now", "आता") if term in normalized)
+    quantity_quintal = None
+    source_unit = None
+    for match in _NUMBER.finditer(normalized):
+        number = float(match.group(1).replace(",", ""))
+        raw_unit = match.group(2).strip()
+        unit = next((entry for entry in _UNITS.values() if raw_unit in entry.aliases), None)
+        if unit is None and raw_unit:
+            unit = next((entry for entry in _UNITS.values() if _alias_match(raw_unit, entry)), None)
+        if unit is not None:
+            quantity_quintal = number * float(unit.conversion_to_quintal or 1)
+            source_unit = unit.canonical
+            break
+        if quantity_quintal is None:
+            quantity_quintal = number
+            source_unit = "quintal"
+    return ExtractedEntities(
+        crop=crop,
+        quantity_quintal=quantity_quintal,
+        source_unit=source_unit,
+        market_terms=market_terms,
+        time_terms=time_terms,
+    )
+
+
+_INTENT_TERMS: dict[str, tuple[str, ...]] = {
+    "distress": ("suicide", "self harm", "want to die", "मरना", "आत्महत्या", "जीव द्यावा"),
+    "out_of_scope": ("pesticide", "fertilizer dose", "दवा", "कीटनाशक", "कर्ज", "loan", "insurance"),
+    "greeting": ("hello", "hi", "namaskar", "नमस्कार", "नमस्ते"),
+    "app_help": ("how to use", "how do i use", "help me use", "कसे वापर", "कैसे इस्तेमाल", "offline"),
+    "sell_or_wait": ("sell", "wait", "विकू", "विकू का", "बेचूं", "थांबू"),
+    "which_crop": ("which crop", "what crop", "what to grow", "पीक", "फसल", "लगाऊं"),
+    "seasonality": ("season", "seasonal", "हंगाम", "मौसम", "कधी वाढ"),
+    "best_mandi": (
+        "best mandi", "nearby mandi", "where sell", "kahan", "bechun", "मंडी", "मंडीत",
+        "जवळपास", "कुठे", "javalpass",
+    ),
+    "price_today": ("today price", "current price", "today", "price", "rate", "आजचा भाव", "आज भाव", "आज का भाव", "भाव"),
+    "term_meaning": ("what is", "meaning", "म्हणजे काय", "मतलब क्या", "net profit"),
+}
+
+
+def route_intent(message: str) -> IntentResult:
+    normalized = normalize_text(message)
+    entities = extract_entities(normalized)
+    for intent, terms in _INTENT_TERMS.items():
+        if any(term in normalized for term in terms):
+            return IntentResult(intent=intent, confidence=0.9, entities=entities)
+    return IntentResult(intent="unknown", confidence=0.35, entities=entities)

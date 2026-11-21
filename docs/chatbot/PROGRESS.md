@@ -2,7 +2,7 @@
 
 - [x] Part 0 - Discovery and design doc
 - [x] Part 1 - Contract, schemas, glossary and knowledge base
-- [ ] Part 2 - Language layer
+- [x] Part 2 - Language layer
 - [ ] Part 3 - Orchestrator, providers, tools, grounding and safety
 - [ ] Part 4 - API endpoints, sessions and limits
 - [ ] Part 5 - Android chat feature
@@ -32,3 +32,16 @@ Added crop/unit/market glossary entries, localized canned strings marked for
 native review, and curated English, Marathi, and Hindi knowledge-base entries
 for terms, screens, settings, and offline behavior. Runtime endpoint wiring is
 intentionally deferred to Part 4.
+
+## Part 2 result
+
+Added NFC/spacing/punctuation normalization, language and script detection for
+English, Marathi, Hindi, Devanagari, Latin, and mixed input, glossary-backed
+crop/unit/market extraction, kg/tonne-to-quintal conversion, fuzzy alias
+matching, and the rules intent router. The router covers greeting, help,
+term meaning, best mandi, price, sell-or-wait, seasonality, crop choice,
+out-of-scope, distress, and unknown intents.
+
+The focused suite has 61 passing cases, including all prompt golden examples,
+additional crop/intent/quantity variations, unit conversion, normalization,
+and safety-priority cases. The full backend suite has 74 passing tests.
