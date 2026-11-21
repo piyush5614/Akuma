@@ -11,7 +11,7 @@
 - [x] Part 8 - Docker and agent handoff
 - [x] Part 9 - Full system test
 - [x] Part 10 - Android build artifact
-- [ ] Part 11 - Final polish and README
+- [x] Part 11 - Final polish and README
 
 Part 0 created the required directory structure, baseline configuration files,
 starter documentation, and the master prompt.
@@ -66,4 +66,9 @@ and Gradle 8.14.3. `assembleDebug`, `testDebugUnitTest`, and `lintDebug`
 passed, and the debug APK was verified with Android `aapt` and copied to
 `artifacts/FairFarm-debug.apk`. Docker image builds remain unverified when the
 Docker daemon is unavailable.
+
+Part 11 finalized the root README with local quick starts, product flow,
+verification results, limitations, and roadmap. The final backend, web,
+contract, live E2E, Android, Compose configuration, and secret-pattern checks
+were run; Docker image builds remain the only environment-blocked verification.
 

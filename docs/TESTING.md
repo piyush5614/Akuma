@@ -21,7 +21,9 @@ The E2E command targets `FAIRFARM_API_URL` (default
 - Android: `testDebugUnitTest`, `lintDebug`, and `assembleDebug` passed with
   JDK 17, Android SDK API 35, and Gradle 8.14.3; APK metadata was verified
   with `aapt`.
-- Docker/E2E: blocked when Docker Desktop is not running.
+- E2E: passed with 11 endpoint groups, five recommendation samples, three
+  languages, CORS, ranking, and validation checks.
+- Docker image build: not verified because Docker Desktop was not running.
 
 ## Manual smoke checklist
 
