@@ -9,6 +9,7 @@ from .common import APIModel, Coordinates, LocalizedText
 class Crop(APIModel):
     id: str
     name: LocalizedText
+    category: str = Field(pattern="^(vegetable|grain|fruit)$")
     unit: str = "quintal"
     perishability: str = Field(pattern="^(low|medium|high)$")
 

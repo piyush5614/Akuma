@@ -9,6 +9,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -58,6 +59,8 @@ private fun FarmerApp() {
     })
     val state by model.state.collectAsState()
     var crop by remember { mutableStateOf("onion") }
+    var category by remember { mutableStateOf("vegetable") }
+    var water by remember { mutableStateOf("medium") }
     var quantity by remember { mutableStateOf("10") }
     var screen by remember { mutableStateOf("home") }
     LaunchedEffect(Unit) { model.loadCrops() }
@@ -67,10 +70,16 @@ private fun FarmerApp() {
             if (state.offline) item { Text("Offline: showing the last available result.", color = MaterialTheme.colorScheme.error) }
             if (screen == "home") {
                 item { Text(if (usingLiveLocation) "Using your current location" else "Using demo location · allow GPS for nearby results", color = MaterialTheme.colorScheme.onSurfaceVariant) }
+                item { Text("What do you grow?", style = MaterialTheme.typography.titleMedium) }
+                item { LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) { items(listOf("vegetable", "grain", "fruit")) { option -> FilterChip(selected = category == option, onClick = { category = option; state.crops.firstOrNull { it.category == option }?.let { crop = it.id } }, label = { Text(option.replaceFirstChar { it.uppercase() }) }) } } }
+                item { LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) { items(state.crops.filter { it.category == category }) { option -> FilterChip(selected = crop == option.id, onClick = { crop = option.id }, label = { Text("${option.name["en"] ?: option.id} · ${option.name["hi"] ?: ""}") }) } } }
                 item { OutlinedTextField(value = crop, onValueChange = { crop = it }, label = { Text("Crop") }, modifier = Modifier.fillMaxWidth()) }
                 item { OutlinedTextField(value = quantity, onValueChange = { quantity = it }, label = { Text("Quantity (quintal)") }, modifier = Modifier.fillMaxWidth()) }
                 item { Button(onClick = { model.recommend(crop, quantity.toDoubleOrNull() ?: 10.0, farmerLocation) }, modifier = Modifier.fillMaxWidth()) { Text("Find best mandi") } }
+                item { Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) { Text("Water:"); listOf("low", "medium", "high").forEach { option -> FilterChip(selected = water == option, onClick = { water = option }, label = { Text(option) }) } } }
+                item { OutlinedButton(onClick = { model.suggestNextCrops(category, crop, water) }, modifier = Modifier.fillMaxWidth()) { Text("Suggest my next crop") } }
                 state.result?.let { result -> item { Text("${result.sell_or_wait.decision}: ${result.sell_or_wait.reason["en"]}") }; items(result.recommendations) { recommendation -> MandiCard(recommendation.mandi.name, recommendation.costs.total_net_inr, recommendation.mandi.freshness) } }
+                if (state.nextCrops.isNotEmpty()) item { Column(verticalArrangement = Arrangement.spacedBy(6.dp)) { Text("Crop ideas for your farm", style = MaterialTheme.typography.titleMedium); state.nextCrops.forEach { suggestion -> Text("${state.crops.firstOrNull { it.id == suggestion.crop.crop_id }?.name?.get("en") ?: suggestion.crop.crop_id}: ${suggestion.reason}") } } }
             } else if (screen == "ask") item { ChatPanel(model, state, crop, quantity, farmerLocation) }
             else if (screen == "insights") item { Text("Seasonality and crop-profit insights will use the same backend data.") }
             else item { Text("Language, vehicle rate, water availability, and data freshness settings.") }

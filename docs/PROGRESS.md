@@ -78,3 +78,10 @@ into recommendations and Saathi context. The Saathi web experience is now a
 full-width chat surface without the assistant-status sidebar. When location is
 denied, both clients explicitly show and use the Maharashtra demo fallback.
 
+The guided crop-to-market flow now presents a common Indian catalogue grouped
+into vegetables, grains, and fruits with English, Hindi, and Marathi names.
+Farmers can enter quantity and manual coordinates, see backend-ranked market
+results and sell guidance, and request explainable next-crop ideas using crop
+history, category preference, and water availability. The same catalogue and
+next-crop API are available to Android.
+

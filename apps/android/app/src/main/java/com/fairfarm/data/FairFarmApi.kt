@@ -11,4 +11,5 @@ interface FairFarmApi {
     @POST("chat") suspend fun chat(@Body request: ChatRequest): Envelope<ChatResponse>
     @GET("chat/starters") suspend fun chatStarters(@retrofit2.http.Query("lang") language: String): Envelope<List<ChatStarter>>
     @POST("chat/feedback") suspend fun chatFeedback(@Body request: ChatFeedbackRequest): Envelope<ChatFeedbackResponse>
+    @POST("insights/next-crops") suspend fun nextCrops(@Body request: NextCropRequest): Envelope<List<NextCrop>>
 }

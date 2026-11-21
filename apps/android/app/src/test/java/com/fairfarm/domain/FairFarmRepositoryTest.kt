@@ -12,6 +12,7 @@ private class FakeApi : FairFarmApi {
     override suspend fun chat(request: ChatRequest) = Envelope(ChatResponse("session-1", ChatReply("Hello", "Hello", "en", "latin"), emptyList(), emptyList(), ChatMeta("greeting", emptyList(), "now", true, 1.0, true, false, "request-1")), "now", true)
     override suspend fun chatStarters(language: String) = Envelope(emptyList<ChatStarter>(), "now", true)
     override suspend fun chatFeedback(request: ChatFeedbackRequest) = Envelope(ChatFeedbackResponse(true), "now", true)
+    override suspend fun nextCrops(request: NextCropRequest) = Envelope(emptyList<NextCrop>(), "now", true)
 }
 
 class FairFarmRepositoryTest {

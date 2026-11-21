@@ -58,11 +58,14 @@ The verified debug APK is copied to `artifacts/FairFarm-debug.apk`.
    freshness.
 5. Use Saathi as a conversational chatbox for mandi, price, and sell-or-wait
    questions.
+6. Use Saathi's guided finder to choose a vegetable, grain, or fruit, enter
+   quantity and location, compare all returned markets, and request an
+   explainable next-crop suggestion.
 
-Explorer, Regions, and Saathi request the browser's current location to focus
-results around the farmer. The Android app requests coarse/fine GPS permission
-and sends its last known location to the same backend. If permission is
-declined, the UI clearly labels the Maharashtra demo fallback.
+Explorer and Regions request browser location. The guided Saathi finder accepts
+manual coordinates, while Android requests coarse/fine GPS permission and sends
+its last known location to the same backend. If location is unavailable, the
+UI clearly labels the Maharashtra demo fallback.
 
 ## API and project docs
 

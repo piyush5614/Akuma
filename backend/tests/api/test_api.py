@@ -17,6 +17,17 @@ async def test_health_and_crops(client):
     response = await client.get("/api/v1/crops")
     assert response.status_code == 200
     assert response.json()["data"][0]["id"] == "onion"
+    assert {crop["category"] for crop in response.json()["data"]} == {"vegetable", "grain", "fruit"}
+
+
+@pytest.mark.asyncio
+async def test_next_crop_suggestions_use_category_history_and_water(client):
+    response = await client.post("/api/v1/insights/next-crops", json={"category": "grain", "crop_history": ["soybean"], "water_availability": "low"})
+    assert response.status_code == 200
+    suggestions = response.json()["data"]
+    assert suggestions
+    assert all(item["crop"]["crop_id"] != "soybean" for item in suggestions)
+    assert all("water fit" in item["reason"].lower() for item in suggestions)
 
 
 @pytest.mark.asyncio

@@ -1,7 +1,6 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { Bot, MapPin, Send, ShieldCheck, Sparkles } from "lucide-react";
-import { api } from "../api/client";
-import { useLiveLocation } from "../hooks/useLiveLocation";
+import { api, Crop, LocationContext, RecommendResult } from "../api/client";
 
 type Message = { role: "user" | "assistant"; text: string; intent?: string; grounded?: boolean };
 
@@ -12,7 +11,15 @@ const starters = [
 ];
 
 export function Saathi() {
-  const liveLocation = useLiveLocation();
+  const [crops, setCrops] = useState<Crop[]>([]);
+  const [category, setCategory] = useState<Crop["category"]>("vegetable");
+  const [selectedCrop, setSelectedCrop] = useState("onion");
+  const [quantity, setQuantity] = useState("10");
+  const [waterAvailability, setWaterAvailability] = useState<"low" | "medium" | "high">("medium");
+  const [lat, setLat] = useState("18.52");
+  const [lng, setLng] = useState("73.86");
+  const [marketResult, setMarketResult] = useState<RecommendResult>();
+  const [nextCropSuggestions, setNextCropSuggestions] = useState<{ crop: { crop_id: string; risk_adjusted_midpoint_inr_per_acre: string; water_fit: string }; reason: string }[]>([]);
   const [input, setInput] = useState("");
   const [sessionId, setSessionId] = useState<string>();
   const [sending, setSending] = useState(false);
@@ -20,6 +27,38 @@ export function Saathi() {
   const [messages, setMessages] = useState<Message[]>([
     { role: "assistant", text: "Namaskar! I’m Saathi. Ask me which mandi pays more, today’s price, or whether to sell now." },
   ]);
+  const [flowError, setFlowError] = useState("");
+
+  useEffect(() => {
+    void api.crops().then((response) => setCrops(response.data)).catch(() => setFlowError("Crop catalogue could not be loaded."));
+  }, []);
+
+  const categoryCrops = useMemo(() => crops.filter((crop) => crop.category === category), [crops, category]);
+  const location: LocationContext = { lat: Number(lat) || 18.52, lng: Number(lng) || 73.86, source: "fallback" };
+
+  async function findMarkets() {
+    setFlowError("");
+    const amount = Number(quantity);
+    if (!selectedCrop || !Number.isFinite(amount) || amount <= 0) {
+      setFlowError("Choose a crop and enter a valid quantity.");
+      return;
+    }
+    try {
+      const response = await api.recommend(selectedCrop, amount, location);
+      setMarketResult(response.data);
+    } catch (reason) {
+      setFlowError(reason instanceof Error ? reason.message : "Markets could not be loaded.");
+    }
+  }
+
+  async function suggestNextCrops() {
+    try {
+      const response = await api.nextCrops(category, [selectedCrop], waterAvailability);
+      setNextCropSuggestions(response.data);
+    } catch (reason) {
+      setFlowError(reason instanceof Error ? reason.message : "Crop suggestions could not be loaded.");
+    }
+  }
 
   async function sendMessage(event: FormEvent) {
     event.preventDefault();
@@ -30,7 +69,7 @@ export function Saathi() {
     setMessages((current) => [...current, { role: "user", text: message }]);
     setSending(true);
     try {
-      const response = await api.saathiChat(message, sessionId, liveLocation.location);
+      const response = await api.saathiChat(message, sessionId, location);
       setSessionId(response.data.session_id);
       setMessages((current) => [...current, {
         role: "assistant",
@@ -51,9 +90,21 @@ export function Saathi() {
 
   return <div className="saathi-page">
     <div className="saathi-heading">
-      <div><span className="eyebrow">SAATHI</span><h2>Your farming companion</h2><p>Ask naturally. I’ll compare nearby mandis and explain what reaches your pocket.</p></div>
-      <div className="saathi-location"><MapPin size={16} /> {liveLocation.loading ? "Finding you…" : liveLocation.location.source === "live" ? "Live location enabled" : "Demo location"} </div>
+      <div><span className="eyebrow">SAATHI</span><h2>Your farming companion</h2><p>Tell me your crop, quantity, and location. I’ll compare markets and help you plan the next crop.</p></div>
+      <div className="saathi-location"><MapPin size={16} /> Manual location</div>
     </div>
+    <section className="guided-flow card">
+      <div className="guided-title"><div><span className="eyebrow">SMART MARKET FINDER</span><h3>What are you selling?</h3></div><span>Step 1 · 3</span></div>
+      <div className="guided-label">Crop type</div>
+      <div className="guided-options">{(["vegetable", "grain", "fruit"] as const).map((item) => <button className={category === item ? "selected" : ""} type="button" key={item} onClick={() => { setCategory(item); setSelectedCrop(""); }}>{item === "vegetable" ? "Vegetables" : item === "grain" ? "Grains" : "Fruits"}</button>)}</div>
+      <div className="guided-label">Select crop</div>
+      <div className="crop-options">{categoryCrops.map((crop) => <button className={selectedCrop === crop.id ? "selected" : ""} type="button" key={crop.id} onClick={() => setSelectedCrop(crop.id)}>{crop.name.en}<small>{crop.name.hi} · {crop.name.mr}</small></button>)}</div>
+      <div className="guided-grid"><label>Quantity (quintal)<input type="number" min="0.1" step="0.1" value={quantity} onChange={(event) => setQuantity(event.target.value)} /></label><label>Latitude<input value={lat} onChange={(event) => setLat(event.target.value)} /></label><label>Longitude<input value={lng} onChange={(event) => setLng(event.target.value)} /></label></div>
+      <div className="guided-actions"><button className="primary" type="button" onClick={() => void findMarkets()}>Find best markets</button><label>Water for next crop<select value={waterAvailability} onChange={(event) => setWaterAvailability(event.target.value as "low" | "medium" | "high")}><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option></select></label><button type="button" onClick={() => void suggestNextCrops()}>Suggest my next crop</button></div>
+      {flowError && <p className="chat-error">{flowError}</p>}
+      {marketResult && <div className="market-result"><div><strong>Best market: {marketResult.recommendations[0]?.mandi.name ?? "No fresh market found"}</strong><span>{marketResult.recommendations[0] ? `₹${marketResult.recommendations[0].costs.total_net_inr} total net · ${marketResult.recommendations[0].distance_km} km` : "Try a larger radius or another crop."}</span></div><b>{marketResult.sell_or_wait.decision}: {marketResult.sell_or_wait.reason.en}</b></div>}
+      {nextCropSuggestions.length > 0 && <div className="next-crops"><strong>Crop ideas for your farm</strong>{nextCropSuggestions.map((suggestion) => <div key={suggestion.crop.crop_id}><b>{crops.find((crop) => crop.id === suggestion.crop.crop_id)?.name.en ?? suggestion.crop.crop_id}</b><span>{suggestion.reason}</span></div>)}</div>}
+    </section>
     <div className="saathi-layout">
       <section className="chat-shell">
         <div className="chat-header"><div className="saathi-avatar"><Bot size={20} /></div><div><strong>Saathi</strong><span>FairFarm AI assistant</span></div><Sparkles size={18} className="chat-sparkle" /></div>

@@ -30,7 +30,10 @@ debug APK is copied to `artifacts/FairFarm-debug.apk`.
 
 ## Saathi chat
 
-The Ask tab sends text questions to `POST /api/v1/chat` using the same backend
+The Home tab now groups the common crop catalogue by vegetable, grain, and
+fruit, accepts quantity, ranks markets, and can request next-crop ideas using
+crop history and water availability. The Ask tab sends text questions to
+`POST /api/v1/chat` using the same backend
 as recommendations. It keeps the session id in the ViewModel, displays
 localized replies, shows loading/offline errors, blocks duplicate sends, and
 keeps the last 100 messages in the current app process. Start the backend

@@ -1,6 +1,7 @@
 from .admin import AdminSettings, AdminSummary, ImportResult, Meta, QueryLogResponse
 from .auth import LoginRequest, LoginResponse
 from .catalog import Crop, Mandi, Trend, TrendPoint
+from .insights import NextCropRequest, NextCropSuggestion
 from .chat import (
     ChatCard,
     ChatClient,

@@ -24,6 +24,8 @@ from .schemas import (
     LoginResponse,
     Mandi,
     Meta,
+    NextCropRequest,
+    NextCropSuggestion,
     RecommendRequest,
     RecommendResponse,
     RegionPrice,
@@ -158,8 +160,33 @@ def seasonality(crop_id: str):
 
 @app.get("/api/v1/insights/crop-profit")
 def crop_profit(water_availability: str = Query("medium", pattern="^(low|medium|high)$")):
-    result = [{"crop_id": crop["id"], "price_range_inr_per_quintal": [Decimal(1800), Decimal(3200)], "yield_range_quintal_per_acre": [Decimal(40), Decimal(80)], "cost_inr_per_acre": Decimal(70000), "risk_adjusted_midpoint_inr_per_acre": Decimal(100000), "water_fit": water_availability, "herd_warning": False, "source": "DEMO"} for crop in CROPS]
+    result = [_crop_profit_row(crop, water_availability) for crop in CROPS]
     return envelope(result)
+
+
+def _crop_profit_row(crop: dict, water_availability: str) -> dict:
+    water_need = {"vegetable": "medium", "grain": "low", "fruit": "high"}[crop["category"]]
+    fit = "high" if water_need == water_availability or water_availability == "high" else "medium" if water_availability == "medium" else "low"
+    midpoint = {"high": Decimal(125000), "medium": Decimal(105000), "low": Decimal(85000)}[fit]
+    return {"crop_id": crop["id"], "price_range_inr_per_quintal": [Decimal(1800), Decimal(3200)], "yield_range_quintal_per_acre": [Decimal(40), Decimal(80)], "cost_inr_per_acre": Decimal(70000), "risk_adjusted_midpoint_inr_per_acre": midpoint, "water_fit": fit, "herd_warning": False, "source": "DEMO"}
+
+
+@app.post("/api/v1/insights/next-crops")
+def next_crops(request: NextCropRequest):
+    history = set(request.crop_history)
+    candidates = [crop for crop in CROPS if crop["category"] == request.category and crop["id"] not in history]
+    suggestions = []
+    for crop in candidates:
+        profit = _crop_profit_row(crop, request.water_availability)
+        reasons = [
+            f"Fits your {request.category} preference",
+            f"Water fit is {profit['water_fit']} for your stated availability",
+        ]
+        if history:
+            reasons.append("Keeps your current crop experience in the same category")
+        suggestions.append(NextCropSuggestion(crop=profit, reason="; ".join(reasons), reasons=reasons))
+    suggestions.sort(key=lambda item: (-item.crop.risk_adjusted_midpoint_inr_per_acre, item.crop.crop_id))
+    return envelope(suggestions[:5])
 
 
 @app.get("/api/v1/insights/backtest")

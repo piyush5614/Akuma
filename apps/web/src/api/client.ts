@@ -2,7 +2,7 @@ export type Language = "en" | "mr" | "hi";
 export type Freshness = "FRESH" | "STALE" | "OLD" | "NO_REPORT";
 
 export interface Envelope<T> { data: T; data_as_of: string; is_demo: boolean }
-export interface Crop { id: string; name: Record<Language, string>; unit: string; perishability: string }
+export interface Crop { id: string; name: Record<Language, string>; category: "vegetable" | "grain" | "fruit"; unit: string; perishability: string }
 export interface Mandi { id: string; name: string; district: string; freshness: Freshness; modal_price_inr: string | null; location: { lat: number; lng: number } }
 export interface Recommendation { mandi: Mandi; distance_km: string; costs: { total_net_inr: string; net_per_quintal_inr: string }; rank: number }
 export interface RecommendResult { recommendations: Recommendation[]; old_mandis: Recommendation[]; sell_or_wait: { decision: string; reason: Record<Language, string>; disclaimer: string } }
@@ -11,6 +11,7 @@ export interface SaathiMetrics { messages_per_day: Record<string, number>; messa
 export interface SaathiTestResult { reply: string; language: Language; intent: string; tools_used: string[]; tool_results: Array<Record<string, unknown>>; grounded: boolean; fallback_used: boolean }
 export interface SaathiChatResult { session_id: string; reply: { text: string; speak_text: string; language: Language; script: "latin" | "devanagari" }; cards: Array<Record<string, unknown>>; chips: string[]; meta: { intent: string; tools_used: string[]; grounded: boolean; fallback_used: boolean; request_id: string } }
 export interface LocationContext { lat: number; lng: number; source?: "live" | "fallback" }
+export interface NextCropSuggestion { crop: { crop_id: string; risk_adjusted_midpoint_inr_per_acre: string; water_fit: string }; reason: string; reasons: string[] }
 
 const API_URL = window.__FAIRFARM_CONFIG__?.API_URL ?? import.meta.env.VITE_API_URL ?? "http://localhost:8000/api/v1";
 
@@ -42,6 +43,7 @@ export const api = {
   mandis: (cropId: string, location: LocationContext = { lat: 18.52, lng: 73.86 }) => request<Mandi[]>(`/mandis?crop_id=${encodeURIComponent(cropId)}&lat=${location.lat}&lng=${location.lng}&radius_km=300`),
   recommend: (cropId: string, quantity: number, location: LocationContext = { lat: 18.52, lng: 73.86 }) => request<RecommendResult>("/recommend", { method: "POST", body: JSON.stringify({ crop_id: cropId, quantity_quintal: quantity, farmer_location: { lat: location.lat, lng: location.lng }, radius_km: 300 }) }),
   seasonality: (cropId: string) => request<{ best_months: number[]; worst_months: number[] }>("/insights/seasonality?crop_id=" + cropId),
+  nextCrops: (category: Crop["category"], cropHistory: string[], waterAvailability: "low" | "medium" | "high") => request<NextCropSuggestion[]>("/insights/next-crops", { method: "POST", body: JSON.stringify({ category, crop_history: cropHistory, water_availability: waterAvailability }) }),
   meta: () => request<{ api_version: string; min_app_version: string; is_demo: boolean }>("/meta"),
   login: (email: string, password: string) => request<{ access_token: string }>("/auth/login", { method: "POST", body: JSON.stringify({ email, password }) }),
   updateSettings: (settings: AdminSettings) => request<AdminSettings>("/admin/settings", { method: "PUT", body: JSON.stringify(settings) }),

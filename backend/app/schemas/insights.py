@@ -3,6 +3,7 @@ from decimal import Decimal
 from pydantic import Field
 
 from .common import APIModel
+from .catalog import Crop
 
 
 class SeasonalityMonth(APIModel):
@@ -27,6 +28,18 @@ class CropProfit(APIModel):
     water_fit: str = Field(pattern="^(low|medium|high)$")
     herd_warning: bool
     source: str
+
+
+class NextCropRequest(APIModel):
+    category: str = Field(pattern="^(vegetable|grain|fruit)$")
+    crop_history: list[str] = Field(default_factory=list, max_length=20)
+    water_availability: str = Field(default="medium", pattern="^(low|medium|high)$")
+
+
+class NextCropSuggestion(APIModel):
+    crop: CropProfit
+    reason: str
+    reasons: list[str]
 
 
 class Backtest(APIModel):

@@ -5,7 +5,7 @@ import kotlinx.serialization.json.JsonObject
 
 @Serializable data class Envelope<T>(val data: T, val data_as_of: String, val is_demo: Boolean)
 @Serializable data class Coordinates(val lat: Double, val lng: Double)
-@Serializable data class Crop(val id: String, val name: Map<String, String>, val unit: String, val perishability: String)
+@Serializable data class Crop(val id: String, val name: Map<String, String>, val unit: String, val perishability: String, val category: String = "vegetable")
 @Serializable data class Mandi(val id: String, val name: String, val district: String, val freshness: String, val modal_price_inr: String? = null, val location: Coordinates)
 @Serializable data class RecommendRequest(val crop_id: String, val quantity_quintal: Double, val farmer_location: Coordinates, val radius_km: Double)
 @Serializable data class RecommendResult(val crop_id: String, val quantity_quintal: Double, val recommendations: List<Recommendation>, val old_mandis: List<Recommendation>, val sell_or_wait: SellWait)
@@ -21,5 +21,8 @@ import kotlinx.serialization.json.JsonObject
 @Serializable data class ChatCard(val type: String, val data: JsonObject)
 @Serializable data class ChatResponse(val session_id: String, val reply: ChatReply, val cards: List<ChatCard>, val chips: List<String>, val meta: ChatMeta)
 @Serializable data class ChatStarter(val label: String, val message: String)
+@Serializable data class NextCropRequest(val category: String, val crop_history: List<String>, val water_availability: String)
+@Serializable data class NextCrop(val crop: CropProfit, val reason: String, val reasons: List<String>)
+@Serializable data class CropProfit(val crop_id: String, val risk_adjusted_midpoint_inr_per_acre: String, val water_fit: String)
 @Serializable data class ChatFeedbackRequest(val request_id: String, val rating: String, val reason_code: String? = null)
 @Serializable data class ChatFeedbackResponse(val accepted: Boolean)

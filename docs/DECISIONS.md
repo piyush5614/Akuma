@@ -133,3 +133,16 @@
   can include both nearby mandis and larger regional market centres; ranking
   still applies distance and backend net-return rules.
 
+## Guided crop planning
+
+- The first guided catalogue uses common Indian vegetables, grains, and fruits
+  with English, Hindi, and Marathi names. It is intentionally expandable rather
+  than claiming to be an exhaustive national crop database.
+- Next-crop suggestions accept crop history, preferred category, and water
+  availability. Results are advisory, explain their water/category/history
+  reasoning, and remain based on demo assumptions until validated agronomic and
+  market data is imported.
+- The guided web flow uses manual latitude/longitude entry as selected for this
+  feature; Android retains its existing device-location permission path and
+  allows the existing fallback.
+
