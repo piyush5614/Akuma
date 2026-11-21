@@ -55,5 +55,5 @@ validation; prompt-injection, out-of-scope, and distress handling; and log
 redaction for phone, identity, and bank data. Rules mode remains network-free.
 
 The focused orchestrator suite has 7 passing tests, and the full backend suite
-has 80 passing tests. Public endpoint migration, sessions, rate limits, and
+has 81 passing tests. Public endpoint migration, sessions, rate limits, and
 Android/web wiring remain deferred to Parts 4-6.
