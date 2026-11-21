@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.fairfarm.data.Coordinates
 
 @Composable
-fun ChatPanel(model: FairFarmViewModel, state: FarmerState, crop: String, quantity: String) {
+fun ChatPanel(model: FairFarmViewModel, state: FarmerState, crop: String, quantity: String, location: Coordinates) {
     var message by remember { mutableStateOf("") }
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text("Saathi", style = MaterialTheme.typography.headlineSmall)
@@ -49,7 +49,7 @@ fun ChatPanel(model: FairFarmViewModel, state: FarmerState, crop: String, quanti
         )
         Button(
             onClick = {
-                model.sendChat(message, crop, quantity.toDoubleOrNull(), Coordinates(18.52, 73.86))
+                model.sendChat(message, crop, quantity.toDoubleOrNull(), location)
                 message = ""
             },
             enabled = message.isNotBlank() && !state.chatSending,

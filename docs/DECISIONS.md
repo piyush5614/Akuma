@@ -118,3 +118,18 @@
   its measured accuracy is reported rather than treating the golden set as a
   production accuracy claim.
 
+## Live location and Saathi UX
+
+- Web geolocation is requested through the browser permission API and passed
+  into mandi and Saathi requests; Pune coordinates remain an explicitly
+  labelled fallback when permission is denied or unavailable.
+- Android uses the existing Google fused-location dependency and requests
+  coarse/fine permissions on app start. The last known location is passed to
+  recommendation and chat calls, with the same labelled Maharashtra fallback.
+- The backend remains the source of truth for the available market set and
+  ranking. The current demo runtime contains Pune, Nashik, and Satara records;
+  broader city coverage requires importing or adding validated market data.
+- Saathi's best-mandi tool defaults to the API's 300 km maximum so a response
+  can include both nearby mandis and larger regional market centres; ranking
+  still applies distance and backend net-return rules.
+

@@ -72,3 +72,9 @@ verification results, limitations, and roadmap. The final backend, web,
 contract, live E2E, Android, Compose configuration, and secret-pattern checks
 were run; Docker image builds remain the only environment-blocked verification.
 
+Latest UX/location update wires browser geolocation into Explorer, Regions, and
+Saathi, and wires Android coarse/fine permissions plus the fused last location
+into recommendations and Saathi context. The Saathi web experience is now a
+full-width chat surface without the assistant-status sidebar. When location is
+denied, both clients explicitly show and use the Maharashtra demo fallback.
+

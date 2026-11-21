@@ -1,10 +1,12 @@
 package com.fairfarm
 
-import android.content.Intent
-import android.net.Uri
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -12,7 +14,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.android.gms.location.LocationServices
 import com.fairfarm.data.ApiFactory
 import com.fairfarm.data.Coordinates
 import com.fairfarm.domain.FairFarmRepository
@@ -26,6 +30,29 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 private fun FarmerApp() {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val fusedLocation = remember { LocationServices.getFusedLocationProviderClient(context) }
+    var farmerLocation by remember { mutableStateOf(Coordinates(18.52, 73.86)) }
+    var usingLiveLocation by remember { mutableStateOf(false) }
+    fun readLocation() {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+            ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) return
+        fusedLocation.lastLocation.addOnSuccessListener { location ->
+            if (location != null) {
+                farmerLocation = Coordinates(location.latitude, location.longitude)
+                usingLiveLocation = true
+            }
+        }
+    }
+    val locationPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
+        readLocation()
+    }
+    LaunchedEffect(Unit) {
+        val fine = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        val coarse = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        if (fine || coarse) readLocation()
+        else locationPermission.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION))
+    }
     val model: FairFarmViewModel = viewModel(factory = object : androidx.lifecycle.ViewModelProvider.Factory {
         override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T = FairFarmViewModel(FairFarmRepository(ApiFactory.api)) as T
     })
@@ -39,11 +66,12 @@ private fun FarmerApp() {
             item { Text("FairFarm", style = MaterialTheme.typography.labelLarge); Text(if (screen == "home") "More in your pocket." else screen.replaceFirstChar { it.uppercase() }, style = MaterialTheme.typography.headlineLarge) }
             if (state.offline) item { Text("Offline: showing the last available result.", color = MaterialTheme.colorScheme.error) }
             if (screen == "home") {
+                item { Text(if (usingLiveLocation) "Using your current location" else "Using demo location · allow GPS for nearby results", color = MaterialTheme.colorScheme.onSurfaceVariant) }
                 item { OutlinedTextField(value = crop, onValueChange = { crop = it }, label = { Text("Crop") }, modifier = Modifier.fillMaxWidth()) }
                 item { OutlinedTextField(value = quantity, onValueChange = { quantity = it }, label = { Text("Quantity (quintal)") }, modifier = Modifier.fillMaxWidth()) }
-                item { Button(onClick = { model.recommend(crop, quantity.toDoubleOrNull() ?: 10.0, Coordinates(18.52, 73.86)) }, modifier = Modifier.fillMaxWidth()) { Text("Find best mandi") } }
+                item { Button(onClick = { model.recommend(crop, quantity.toDoubleOrNull() ?: 10.0, farmerLocation) }, modifier = Modifier.fillMaxWidth()) { Text("Find best mandi") } }
                 state.result?.let { result -> item { Text("${result.sell_or_wait.decision}: ${result.sell_or_wait.reason["en"]}") }; items(result.recommendations) { recommendation -> MandiCard(recommendation.mandi.name, recommendation.costs.total_net_inr, recommendation.mandi.freshness) } }
-            } else if (screen == "ask") item { ChatPanel(model, state, crop, quantity) }
+            } else if (screen == "ask") item { ChatPanel(model, state, crop, quantity, farmerLocation) }
             else if (screen == "insights") item { Text("Seasonality and crop-profit insights will use the same backend data.") }
             else item { Text("Language, vehicle rate, water availability, and data freshness settings.") }
             if (state.loading) item { CircularProgressIndicator() }

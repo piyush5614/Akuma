@@ -59,6 +59,11 @@ The verified debug APK is copied to `artifacts/FairFarm-debug.apk`.
 5. Use Saathi as a conversational chatbox for mandi, price, and sell-or-wait
    questions.
 
+Explorer, Regions, and Saathi request the browser's current location to focus
+results around the farmer. The Android app requests coarse/fine GPS permission
+and sends its last known location to the same backend. If permission is
+declined, the UI clearly labels the Maharashtra demo fallback.
+
 ## API and project docs
 
 - [API contract](docs/API_CONTRACT.md)
@@ -94,8 +99,9 @@ LLM provider keys belong in local environment configuration only.
   and Agmarknet import are persistent preparation, not yet the runtime store.
 - Compose includes PostgreSQL as a deployment target, but runtime PostgreSQL
   integration is still pending.
-- The web regional map and Android map/voice flows are documented UI
-  placeholders; core ranking and recommendation flows remain functional.
+- The demo runtime currently contains three Maharashtra market records
+  (Pune, Nashik, and Satara); nearby and larger-city recommendations will
+  expand as validated market data is imported.
 - Production readiness requires replacing demo credentials/secrets, connecting
   real data, adding operational monitoring, and completing the map/voice
   integrations.

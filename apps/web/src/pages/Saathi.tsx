@@ -1,8 +1,7 @@
 import { FormEvent, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Bot, Send, ShieldCheck, Sparkles } from "lucide-react";
+import { Bot, MapPin, Send, ShieldCheck, Sparkles } from "lucide-react";
 import { api } from "../api/client";
-import { LoadingState } from "../components/State";
+import { useLiveLocation } from "../hooks/useLiveLocation";
 
 type Message = { role: "user" | "assistant"; text: string; intent?: string; grounded?: boolean };
 
@@ -13,7 +12,7 @@ const starters = [
 ];
 
 export function Saathi() {
-  const metrics = useQuery({ queryKey: ["saathi", "metrics"], queryFn: api.saathiMetrics });
+  const liveLocation = useLiveLocation();
   const [input, setInput] = useState("");
   const [sessionId, setSessionId] = useState<string>();
   const [sending, setSending] = useState(false);
@@ -31,7 +30,7 @@ export function Saathi() {
     setMessages((current) => [...current, { role: "user", text: message }]);
     setSending(true);
     try {
-      const response = await api.saathiChat(message, sessionId);
+      const response = await api.saathiChat(message, sessionId, liveLocation.location);
       setSessionId(response.data.session_id);
       setMessages((current) => [...current, {
         role: "assistant",
@@ -52,8 +51,8 @@ export function Saathi() {
 
   return <div className="saathi-page">
     <div className="saathi-heading">
-      <div><span className="eyebrow">SAATHI</span><h2>Your farming companion</h2><p>Clear answers about prices, mandis, and what reaches your pocket.</p></div>
-      <div className="saathi-status"><span className="status-dot" /> Online · Demo data</div>
+      <div><span className="eyebrow">SAATHI</span><h2>Your farming companion</h2><p>Ask naturally. I’ll compare nearby mandis and explain what reaches your pocket.</p></div>
+      <div className="saathi-location"><MapPin size={16} /> {liveLocation.loading ? "Finding you…" : liveLocation.location.source === "live" ? "Live location enabled" : "Demo location"} </div>
     </div>
     <div className="saathi-layout">
       <section className="chat-shell">
@@ -73,11 +72,6 @@ export function Saathi() {
         </form>
         <p className="chat-disclaimer"><ShieldCheck size={14} /> Guidance only, not a guarantee · Demo market data</p>
       </section>
-      <aside className="saathi-insights">
-        <div className="insight-title"><span className="eyebrow">ASSISTANT STATUS</span><ShieldCheck size={18} /></div>
-        {metrics.isPending ? <LoadingState /> : metrics.isError ? <p className="muted">Admin analytics available after sign-in.</p> : <><div className="mini-stat"><span>Messages today</span><strong>{metrics.data.data.messages_per_day.today ?? 0}</strong></div><div className="mini-stat"><span>Fallback rate</span><strong>{Math.round(metrics.data.data.fallback_rate * 100)}%</strong></div><div className="mini-stat"><span>Grounding failures</span><strong>{metrics.data.data.grounding_failure_count}</strong></div></>}
-        <div className="insight-note"><strong>What Saathi can do</strong><p>Compare nearby mandis, explain net return, show price trends, and help with sell-or-wait decisions.</p></div>
-      </aside>
     </div>
   </div>;
 }

@@ -25,7 +25,7 @@ class ToolContext(BaseModel):
 class BestMandisArgs(BaseModel):
     crop: str
     quantity_quintal: Decimal = Field(default=Decimal(1), gt=0, le=10000)
-    radius_km: float = Field(default=50, ge=5, le=300)
+    radius_km: float = Field(default=300, ge=5, le=300)
 
 
 class MandiPriceArgs(BaseModel):
