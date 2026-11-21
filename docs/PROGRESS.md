@@ -7,7 +7,7 @@
 - [x] Part 4 - Demo data and seeding
 - [x] Part 5 - Web dashboard
 - [x] Part 6 - Android farmer app
-- [ ] Part 7 - Integration and connection logic
+- [x] Part 7 - Integration and connection logic
 - [ ] Part 8 - Docker and agent handoff
 - [ ] Part 9 - Full system test
 - [ ] Part 10 - Android build artifact
@@ -48,4 +48,9 @@ models, repository/ViewModel boundary, farmer home/result flow, bottom
 navigation screens, offline/error indicators, location permissions, and
 debug/release network policy. Android compilation could not be run because
 Java/JDK and Gradle are unavailable in this environment.
+
+Part 7 added the OpenAPI contract checker, GET-only retry/backoff and timeout
+behavior, POST no-retry behavior, Android metadata compatibility checks,
+consistent client error mapping, and the same language/unit contract across
+the clients.
 

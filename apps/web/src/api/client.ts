@@ -12,12 +12,25 @@ const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000/api/v1";
 
 async function request<T>(path: string, init?: RequestInit): Promise<Envelope<T>> {
   const token = localStorage.getItem("fairfarm_token");
-  const response = await fetch(`${API_URL}${path}`, { ...init, headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}), ...init?.headers } });
-  if (!response.ok) {
+  const method = init?.method?.toUpperCase() ?? "GET";
+  const attempts = method === "GET" ? 3 : 1;
+  let lastServerMessage = "Unable to load data. Please try again.";
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    let response: Response;
+    try {
+      response = await fetch(`${API_URL}${path}`, { ...init, signal: AbortSignal.timeout(10000), headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}), ...init?.headers } });
+    } catch (reason) {
+      if (attempt === attempts - 1 || method !== "GET") throw reason instanceof Error ? reason : new Error("Unable to load data. Please try again.");
+      await new Promise((resolve) => setTimeout(resolve, 200 * 2 ** attempt));
+      continue;
+    }
+    if (response.ok) return response.json() as Promise<Envelope<T>>;
     const body = await response.json().catch(() => ({}));
-    throw new Error(body.message ?? "Unable to load data. Please try again.");
+    lastServerMessage = body.message ?? lastServerMessage;
+    if (method !== "GET" || response.status < 500 || attempt === attempts - 1) throw new Error(lastServerMessage);
+    await new Promise((resolve) => setTimeout(resolve, 200 * 2 ** attempt));
   }
-  return response.json() as Promise<Envelope<T>>;
+  throw new Error(lastServerMessage);
 }
 
 export const api = {
@@ -25,6 +38,7 @@ export const api = {
   mandis: (cropId: string) => request<Mandi[]>(`/mandis?crop_id=${encodeURIComponent(cropId)}&lat=18.52&lng=73.86&radius_km=300`),
   recommend: (cropId: string, quantity: number) => request<RecommendResult>("/recommend", { method: "POST", body: JSON.stringify({ crop_id: cropId, quantity_quintal: quantity, farmer_location: { lat: 18.52, lng: 73.86 }, radius_km: 300 }) }),
   seasonality: (cropId: string) => request<{ best_months: number[]; worst_months: number[] }>("/insights/seasonality?crop_id=" + cropId),
+  meta: () => request<{ api_version: string; min_app_version: string; is_demo: boolean }>("/meta"),
   login: (email: string, password: string) => request<{ access_token: string }>("/auth/login", { method: "POST", body: JSON.stringify({ email, password }) }),
   updateSettings: (settings: AdminSettings) => request<AdminSettings>("/admin/settings", { method: "PUT", body: JSON.stringify(settings) }),
 };

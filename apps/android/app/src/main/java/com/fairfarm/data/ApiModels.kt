@@ -11,3 +11,4 @@ import kotlinx.serialization.Serializable
 @Serializable data class Recommendation(val mandi: Mandi, val distance_km: String, val costs: Costs, val rank: Int)
 @Serializable data class Costs(val total_net_inr: String, val net_per_quintal_inr: String)
 @Serializable data class SellWait(val decision: String, val reason: Map<String, String>, val disclaimer: String)
+@Serializable data class Meta(val api_version: String, val min_app_version: String, val is_demo: Boolean)
