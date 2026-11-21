@@ -6,7 +6,7 @@
 - [x] Part 3 - Backend
 - [x] Part 4 - Demo data and seeding
 - [x] Part 5 - Web dashboard
-- [ ] Part 6 - Android farmer app
+- [x] Part 6 - Android farmer app
 - [ ] Part 7 - Integration and connection logic
 - [ ] Part 8 - Docker and agent handoff
 - [ ] Part 9 - Full system test
@@ -42,4 +42,10 @@ Query loading/error/empty states, responsive token-based styling, language
 switching, and the Login, Overview, Price Explorer, Regions, Insights, Data,
 Settings, and Query Log pages. The settings editor sends updates to the
 authenticated backend route.
+
+Part 6 added the Android Gradle/Compose project, shared theme, Retrofit API
+models, repository/ViewModel boundary, farmer home/result flow, bottom
+navigation screens, offline/error indicators, location permissions, and
+debug/release network policy. Android compilation could not be run because
+Java/JDK and Gradle are unavailable in this environment.
 

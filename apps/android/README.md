@@ -1,5 +1,37 @@
 # FairFarm Android
 
-The Android project is scheduled for Part 6. The shared design tokens are
-defined in [docs/design/tokens.json](../../docs/design/tokens.json) and the
-Compose theme must mirror those values.
+The Android farmer app uses Kotlin, Jetpack Compose Material 3, Retrofit with
+kotlinx.serialization, a repository/ViewModel boundary, Room-ready offline
+dependencies, GPS permissions, OpenStreetMap dependencies, and debug-only
+cleartext access for the emulator.
+
+## Requirements
+
+- Android Studio with JDK 17 and an Android SDK at API 35.
+- An emulator uses `http://10.0.2.2:8000/api/v1/`; a physical phone needs the
+  computer LAN address in `gradle.properties`.
+- The current environment has `adb` but no Java or Gradle, so
+  `gradlew.bat testDebugUnitTest lintDebug` could not be run here.
+
+## Run and build
+
+Open `apps/android` in Android Studio and sync Gradle. Start the backend on port
+8000, then run the `app` configuration. Build with:
+
+```text
+gradlew.bat testDebugUnitTest lintDebug
+gradlew.bat assembleDebug
+adb install -r app/build/outputs/apk/debug/app-debug.apk
+```
+
+The source includes the wrapper properties and a guarded Windows entry point;
+Android Studio can regenerate the wrapper JAR when syncing the project.
+
+## Permissions and troubleshooting
+
+The app requests internet and coarse/fine location permissions. If GPS is
+denied, use the manual location fallback. For a physical phone, use the
+computer LAN IP and allow port 8000 through the firewall. Release builds
+require HTTPS; debug builds allow cleartext only through the debug network
+security configuration. Text-to-speech and speech recognition voice downloads
+may be required for Marathi, Hindi, or English.

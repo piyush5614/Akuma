@@ -1,0 +1,1 @@
+<network-security-config><base-config cleartextTrafficPermitted="false" /><debug-overrides><base-config cleartextTrafficPermitted="true" /></debug-overrides></network-security-config>

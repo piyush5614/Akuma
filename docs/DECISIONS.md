@@ -60,3 +60,12 @@
   graph; the dashboard build and tests pass, but dependency remediation should
   be handled before production deployment.
 
+## Part 6
+
+- Android uses `BuildConfig.BASE_URL`, defaulting to the emulator address in
+  `gradle.properties`; release builds use an HTTPS placeholder until deployment
+  configuration exists.
+- The project is source-complete but not locally build-verified because the
+  preflight environment still lacks Java/JDK and Gradle. Android Studio/JDK 17
+  is required for the first compile.
+
