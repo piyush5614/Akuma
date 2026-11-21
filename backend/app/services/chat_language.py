@@ -138,26 +138,37 @@ def extract_entities(message: str) -> ExtractedEntities:
 
 
 _INTENT_TERMS: dict[str, tuple[str, ...]] = {
-    "distress": ("suicide", "self harm", "want to die", "मरना", "आत्महत्या", "जीव द्यावा"),
-    "out_of_scope": ("pesticide", "fertilizer dose", "दवा", "कीटनाशक", "कर्ज", "loan", "insurance"),
-    "greeting": ("hello", "hi", "namaskar", "नमस्कार", "नमस्ते"),
-    "app_help": ("how to use", "how do i use", "help me use", "कसे वापर", "कैसे इस्तेमाल", "offline"),
-    "sell_or_wait": ("sell", "wait", "विकू", "विकू का", "बेचूं", "थांबू"),
-    "which_crop": ("which crop", "what crop", "what to grow", "पीक", "फसल", "लगाऊं"),
-    "seasonality": ("season", "seasonal", "हंगाम", "मौसम", "कधी वाढ"),
+    "distress": ("suicide", "suicidal", "self harm", "harm myself", "want to die", "ending my life", "kill myself", "do not want to live", "मरना", "आत्महत्या", "जीव द्यावा"),
+    "out_of_scope": ("pesticide", "fertilizer", "medicine", "spray", "pest", "दवा", "कीटनाशक", "कर्ज", "loan", "insurance"),
+    "greeting": ("hello", "hi", "namaskar", "namaste", "hey", "greetings", "good morning", "good afternoon", "good evening", "नमस्कार", "नमस्ते"),
+    "app_help": ("how to use", "how do i use", "help me use", "how does fairfarm work", "how can i", "where can i", "help with", "check a mandi", "read the net return", "understand the app", "set my location", "start a search", "can you explain the ask", "कसे वापर", "कसे काम", "कैसे इस्तेमाल", "कैसे काम", "offline"),
+    "sell_or_wait": ("sell now", "should i sell", "sell or wait", "wait before", "wait or sell", "hold", "is selling now", "better to sell", "can i sell", "time to sell", "whether to sell", "do i sell", "waiting help", "विकू", "विकू का", "बेचूं", "थांबू"),
+    "which_crop": ("which crop", "what crop", "what to grow", "what should i", "what can i plant", "suggest a crop", "recommend a crop", "crop suggestion", "best crop", "choose a crop", "पीक", "फसल", "लगाऊं"),
+    "seasonality": ("season", "seasonal", "seasonality", "price rise", "prices rise", "higher prices", "prices higher", "usually rise", "which month", "what months", "हंगाम", "मौसम", "कधी वाढ"),
     "best_mandi": (
-        "best mandi", "nearby mandi", "where sell", "kahan", "bechun", "मंडी", "मंडीत",
+        "best mandi", "which mandi", "nearby mandi", "nearby mandis", "nearby market", "where sell", "where should i sell", "where can i get", "which market", "best place to sell",
+        "help me choose a mandi", "compare mandis", "mandi ranking", "highest return", "best net return", "kahan", "bechun", "मंडी", "मंडीत",
         "जवळपास", "कुठे", "javalpass",
     ),
     "price_today": ("today price", "current price", "today", "price", "rate", "आजचा भाव", "आज भाव", "आज का भाव", "भाव"),
-    "term_meaning": ("what is", "meaning", "म्हणजे काय", "मतलब क्या", "net profit"),
+    "term_meaning": ("meaning", "what does", "define", "explain", "what is net profit", "what is modal price", "what is stale price", "what is fresh data", "what is transport cost", "what is total net", "what is a quintal", "what is a market fee", "म्हणजे काय", "निव्वळ नफा", "मतलब क्या", "शुद्ध रिटर्न", "net profit"),
 }
+
+
+def _contains_term(normalized: str, term: str) -> bool:
+    return bool(re.search(rf"(?<!\w){re.escape(term)}(?!\w)", normalized))
 
 
 def route_intent(message: str) -> IntentResult:
     normalized = normalize_text(message)
     entities = extract_entities(normalized)
+    if any(_contains_term(normalized, term) for term in _INTENT_TERMS["app_help"]):
+        return IntentResult(intent="app_help", confidence=0.9, entities=entities)
+    if any(_contains_term(normalized, term) for term in _INTENT_TERMS["term_meaning"]):
+        return IntentResult(intent="term_meaning", confidence=0.9, entities=entities)
     for intent, terms in _INTENT_TERMS.items():
-        if any(term in normalized for term in terms):
+        if intent == "term_meaning":
+            continue
+        if any(_contains_term(normalized, term) for term in terms):
             return IntentResult(intent=intent, confidence=0.9, entities=entities)
     return IntentResult(intent="unknown", confidence=0.35, entities=entities)

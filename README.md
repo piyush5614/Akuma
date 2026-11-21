@@ -55,7 +55,7 @@ The verified debug APK is copied to `artifacts/FairFarm-debug.apk`.
 2. The API ranks nearby mandis by estimated total net return.
 3. Review freshness labels, distance, costs, and the sell-now-or-wait guidance.
 4. Use the dashboard for price exploration, insights, data import preview,
-   settings, and query history.
+   settings, query history, and the authenticated Saathi admin test console.
 
 ## API and project docs
 
@@ -65,6 +65,7 @@ The verified debug APK is copied to `artifacts/FairFarm-debug.apk`.
 - [Docker guide](DOCKER_README.md)
 - [Delivery progress](docs/PROGRESS.md)
 - [Decisions and known constraints](docs/DECISIONS.md)
+- [Saathi chatbot progress](docs/chatbot/PROGRESS.md)
 
 ## Verification status
 
@@ -73,6 +74,17 @@ contract checker, and black-box E2E checker pass locally. Android
 `testDebugUnitTest`, `lintDebug`, and `assembleDebug` pass with JDK 17, Android
 SDK API 35, and Gradle 8.14.3. Docker image builds require a running Docker
 Desktop daemon and were not claimed when that daemon was unavailable.
+
+Saathi rules-mode evaluation is reproducible with:
+
+```powershell
+python scripts\chat_eval.py --mode fake
+```
+
+Use `--mode live --limit 20` with a running API to evaluate a bounded sample
+of the deployed contract without exhausting the API rate limit.
+Provider mode is selected with `CHAT_PROVIDER=rules|anthropic|openai-compatible`;
+LLM provider keys belong in local environment configuration only.
 
 ## Current limitations and roadmap
 
@@ -85,3 +97,6 @@ Desktop daemon and were not claimed when that daemon was unavailable.
 - Production readiness requires replacing demo credentials/secrets, connecting
   real data, adding operational monitoring, and completing the map/voice
   integrations.
+- Saathi chat sessions, feedback, and metrics are currently in-memory.
+- Marathi and Hindi responses require native-speaker review before production;
+  see [the review checklist](docs/chatbot/NATIVE_REVIEW_CHECKLIST.md).

@@ -109,3 +109,12 @@
   cannot be stripped; neither prevents the debug build. Docker image builds
   remain unverified when the Docker daemon is unavailable.
 
+## Saathi Part 7
+
+- The golden evaluation uses deterministic rules mode by default and supports
+  optional live API mode without requiring provider credentials for the
+  reproducible baseline.
+- The evaluation includes 180 utterances across English, Marathi, and Hindi;
+  its measured accuracy is reported rather than treating the golden set as a
+  production accuracy claim.
+

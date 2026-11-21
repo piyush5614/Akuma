@@ -7,7 +7,7 @@
 - [x] Part 4 - API endpoints, sessions and limits
 - [x] Part 5 - Android chat feature
 - [x] Part 6 - Dashboard add-on
-- [ ] Part 7 - Evaluation, integration and docs
+- [x] Part 7 - Evaluation, integration and docs
 
 ## Part 0 result
 
@@ -93,3 +93,20 @@ The focused chat API suite has 3 passing tests, Ruff passes, and the web
 typecheck, lint, Vitest suite, and production build pass. Metrics and chat
 events remain in-memory; persistent analytics are deferred to a later
 hardening step.
+
+## Part 7 result
+
+Added a deterministic 180-case golden utterance evaluation with fake rules
+mode and optional live API mode. The report measures intent/language
+accuracy, fallback rate, and grounded-response rate. Extended the black-box
+E2E checker to validate the Saathi response contract and authenticated admin
+metrics/test-console endpoints. Added root and Android setup documentation,
+provider environment guidance, demo questions, limitations, and a native
+Marathi/Hindi review checklist.
+
+Native-speaker sign-off and live LLM-provider evaluation remain pending.
+The rules-mode golden run measured 169/180 cases passed (93.9% combined
+intent/language accuracy), 18.3% fallback rate, and 98.3% grounded responses.
+A clean live rules-mode sample measured 17/20 cases passed with 95.0%
+grounded responses; the bounded sample avoids the configured request rate
+limit.

@@ -41,6 +41,17 @@ Room persistence, native voice input/output, typed native result cards, and
 GPS-derived context are planned follow-up work; the current chat screen uses
 the existing manual location fallback and text input.
 
+Saathi configuration uses the same backend URL as the rest of the app:
+`BuildConfig.BASE_URL` from `gradle.properties` (the emulator default is
+`http://10.0.2.2:8000/api/v1`). Backend provider selection is server-side via
+`CHAT_PROVIDER`; rules mode needs no API key, while Anthropic or
+OpenAI-compatible modes require their local environment keys.
+
+Demo questions include `Which nearby mandi gives the best net return?`,
+`Should I sell my onion now?`, and `What is net profit?`. All demo results are
+labelled by the backend as demo data. The chat is text-only today, has
+in-process history, and does not yet render typed native result cards.
+
 ## Permissions and troubleshooting
 
 The app requests internet and coarse/fine location permissions. If GPS is

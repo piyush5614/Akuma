@@ -64,11 +64,20 @@ def main() -> int:
         status, _, _ = call("GET", path, headers=auth)
         assert status == 200
         checks.append(path)
+    status, saathi_metrics, _ = call("GET", "/admin/saathi/metrics", headers=auth)
+    assert status == 200 and "messages_by_language" in saathi_metrics["data"]
+    checks.append("/admin/saathi/metrics")
     status, _, _ = call("PUT", "/admin/settings", {"road_factor": "1.3", "transport_rate_per_quintal_km": "0.60", "fee_pct": "0.01", "shrinkage_pct_by_crop": {"onion": "0.02"}}, auth)
     assert status == 200
     for language in ("en", "mr", "hi"):
         status, body, _ = call("POST", "/chat", {"message": "Which mandi pays more?", "language": language})
         assert status == 200 and all(body["data"]["answer"].get(code) for code in ("en", "mr", "hi"))
+    status, saathi, _ = call("POST", "/chat", {"message": "nearby mandi for onion", "ui_language": "en", "context": {"lat": 18.52, "lng": 73.86, "crop_id": "onion"}})
+    assert status == 200 and saathi["data"]["reply"]["language"] == "en" and saathi["data"]["meta"]["grounded"] is True
+    checks.append("/chat")
+    status, console, _ = call("POST", "/admin/saathi/test", {"message": "nearby mandi for onion", "context": {"lat": 18.52, "lng": 73.86, "crop_id": "onion"}}, auth)
+    assert status == 200 and "tools_used" in console["data"]
+    checks.append("/admin/saathi/test")
     sample_totals = []
     for quantity in (1, 5, 10, 25, 100):
         status, body, _ = call("POST", "/recommend", {"crop_id": "onion", "quantity_quintal": quantity, "farmer_location": {"lat": 18.52, "lng": 73.86}, "radius_km": 300})
