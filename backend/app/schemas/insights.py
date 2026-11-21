@@ -2,7 +2,7 @@ from decimal import Decimal
 
 from pydantic import Field
 
-from .common import APIModel, LocalizedText
+from .common import APIModel
 
 
 class SeasonalityMonth(APIModel):

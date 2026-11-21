@@ -8,7 +8,7 @@ from .common import APIModel, Coordinates, LocalizedText
 
 class RecommendRequest(APIModel):
     crop_id: str
-    quantity_quintal: Decimal = Field(ge=Decimal("0.1"), le=Decimal("10000"))
+    quantity_quintal: Decimal = Field(ge=Decimal("0.1"), le=Decimal(10000))
     farmer_location: Coordinates
     radius_km: float = Field(default=50, ge=5, le=300)
 

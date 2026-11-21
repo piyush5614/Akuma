@@ -3,7 +3,7 @@
 - [x] Part 0 - Preflight and scaffold
 - [x] Part 1 - Specification and API contract
 - [x] Part 2 - Design system and screen specs
-- [ ] Part 3 - Backend
+- [x] Part 3 - Backend
 - [ ] Part 4 - Demo data and seeding
 - [ ] Part 5 - Web dashboard
 - [ ] Part 6 - Android farmer app
@@ -24,4 +24,11 @@ deferred to Part 3.
 Part 2 added canonical design tokens, web CSS variables, a static visual
 preview, cross-platform theme starters, and wireframes for every planned screen.
 UI implementation is intentionally deferred to Parts 5 and 6.
+
+Part 3 added a FastAPI backend with the documented v1 routes, Pydantic
+validation, Decimal-based pricing and ranking services, freshness and
+sell-or-wait rules, rule-based chat provider, JWT admin protection, CORS, and
+focused unit/API tests. Persistent database models, migrations, and realistic
+demo seeding are intentionally deferred to Part 4 where they can be built
+against the same service interfaces.
 

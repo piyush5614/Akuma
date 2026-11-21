@@ -21,9 +21,9 @@ from .recommend import (
 from .regions import RegionPrice
 
 __all__ = [
+    "APIModel",
     "AdminSettings",
     "AdminSummary",
-    "APIModel",
     "Backtest",
     "ChatRequest",
     "ChatResponse",

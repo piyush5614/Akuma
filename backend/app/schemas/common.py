@@ -1,10 +1,8 @@
 from datetime import date, datetime
 from decimal import Decimal
-from typing import Any, Generic, TypeVar
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
-
-T = TypeVar("T")
 
 
 class APIModel(BaseModel):
@@ -22,8 +20,8 @@ class ResponseMeta(APIModel):
     is_demo: bool
 
 
-class DataResponse(APIModel, Generic[T]):
-    data: T
+class DataResponse(APIModel):
+    data: Any
     data_as_of: datetime
     is_demo: bool
 

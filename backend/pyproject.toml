@@ -1,0 +1,21 @@
+[project]
+name = "fairfarm-backend"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi>=0.108,<1",
+  "pydantic>=2,<3",
+  "PyJWT>=2,<3",
+  "python-multipart>=0.0.6,<1",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 140
+target-version = "py312"
+
+[tool.ruff.lint]
+ignore = ["B008"]

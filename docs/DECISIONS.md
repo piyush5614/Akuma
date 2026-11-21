@@ -29,3 +29,15 @@
 - The first Android theme files are intentionally standalone until the Gradle
   project is created in Part 6.
 
+## Part 3
+
+- The initial backend uses a deterministic in-memory store so the API and
+  domain rules can be tested before database/seeding work in Part 4.
+- Pricing uses `Decimal` throughout and keeps all calculations in backend
+  services; clients must not recompute results.
+- JWT authentication defaults to environment configuration and retains a
+  development fallback only for local tests; production deployment must set a
+  strong `JWT_SECRET` and admin password.
+- Async API tests use httpx ASGI transport because the installed Starlette
+  TestClient is incompatible with the installed httpx release.
+
