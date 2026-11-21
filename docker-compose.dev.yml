@@ -1,0 +1,15 @@
+services:
+  backend:
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - ./backend:/app/backend
+      - backend_data:/data
+  web:
+    command: npm run dev -- --host 0.0.0.0
+    build:
+      context: apps/web
+      dockerfile: Dockerfile
+      target: build
+    volumes:
+      - ./apps/web:/web
+      - /web/node_modules

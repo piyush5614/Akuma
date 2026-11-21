@@ -8,7 +8,7 @@
 - [x] Part 5 - Web dashboard
 - [x] Part 6 - Android farmer app
 - [x] Part 7 - Integration and connection logic
-- [ ] Part 8 - Docker and agent handoff
+- [x] Part 8 - Docker and agent handoff
 - [ ] Part 9 - Full system test
 - [ ] Part 10 - Android build artifact
 - [ ] Part 11 - Final polish and README
@@ -53,4 +53,9 @@ Part 7 added the OpenAPI contract checker, GET-only retry/backoff and timeout
 behavior, POST no-retry behavior, Android metadata compatibility checks,
 consistent client error mapping, and the same language/unit contract across
 the clients.
+
+Part 8 added backend and web container images, Compose services with health
+checks and health-based dependencies, persistent volumes, startup seeding,
+runtime browser API configuration, development overrides, CI workflow, and
+the Docker handoff guide.
 

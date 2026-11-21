@@ -80,3 +80,13 @@
     user-facing update message when the installed app is below the backend
     minimum version.
 
+## Part 8
+
+- Compose includes PostgreSQL as the target database service and a persistent
+    SQLite volume for the current seed-backed API; switching the API runtime to
+    PostgreSQL remains a database integration task.
+- The web image writes `config.js` at container startup so the browser API URL
+    can change without rebuilding static assets.
+- CI runs backend and web checks independently; Android remains locally
+    unverified until a JDK/Android SDK environment is available.
+

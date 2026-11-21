@@ -8,7 +8,7 @@ export interface Recommendation { mandi: Mandi; distance_km: string; costs: { to
 export interface RecommendResult { recommendations: Recommendation[]; old_mandis: Recommendation[]; sell_or_wait: { decision: string; reason: Record<Language, string>; disclaimer: string } }
 export interface AdminSettings { road_factor: string; transport_rate_per_quintal_km: string; fee_pct: string; shrinkage_pct_by_crop: Record<string, string> }
 
-const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000/api/v1";
+const API_URL = window.__FAIRFARM_CONFIG__?.API_URL ?? import.meta.env.VITE_API_URL ?? "http://localhost:8000/api/v1";
 
 async function request<T>(path: string, init?: RequestInit): Promise<Envelope<T>> {
   const token = localStorage.getItem("fairfarm_token");
