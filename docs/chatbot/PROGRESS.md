@@ -3,7 +3,7 @@
 - [x] Part 0 - Discovery and design doc
 - [x] Part 1 - Contract, schemas, glossary and knowledge base
 - [x] Part 2 - Language layer
-- [ ] Part 3 - Orchestrator, providers, tools, grounding and safety
+- [x] Part 3 - Orchestrator, providers, tools, grounding and safety
 - [ ] Part 4 - API endpoints, sessions and limits
 - [ ] Part 5 - Android chat feature
 - [ ] Part 6 - Dashboard add-on
@@ -45,3 +45,15 @@ out-of-scope, distress, and unknown intents.
 The focused suite has 61 passing cases, including all prompt golden examples,
 additional crop/intent/quantity variations, unit conversion, normalization,
 and safety-priority cases. The full backend suite has 74 passing tests.
+
+## Part 3 result
+
+Added rules, Anthropic, and OpenAI-compatible provider adapters; a Pydantic
+validated read-only tool registry; server-owned context handling; a three-round
+provider loop; eight-second timeout fallback; ten-minute TTL caching; grounding
+validation; prompt-injection, out-of-scope, and distress handling; and log
+redaction for phone, identity, and bank data. Rules mode remains network-free.
+
+The focused orchestrator suite has 7 passing tests, and the full backend suite
+has 80 passing tests. Public endpoint migration, sessions, rate limits, and
+Android/web wiring remain deferred to Parts 4-6.
