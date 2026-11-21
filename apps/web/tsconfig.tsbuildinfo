@@ -1,1 +1,0 @@
-{"root":["./src/main.tsx","./src/vite-env.d.ts","./src/api/client.ts","./src/components/shell.tsx","./src/components/state.tsx","./src/i18n/messages.ts","./src/pages/dashboard.tsx","./src/pages/explorer.tsx","./src/pages/login.tsx","./src/pages/simplepages.tsx","./tests/client.test.ts","./tests/setup.ts"],"version":"5.9.3"}
