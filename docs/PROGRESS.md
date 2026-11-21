@@ -42,6 +42,9 @@
   same web interface on Android.
 - Enabled cleartext HTTP for the debug WebView APK and restarted the web and
   backend services on `0.0.0.0`; both LAN endpoints return HTTP 200.
+- Demo seeding now generates one deterministic year of history and skips
+  rewrites when an identical 25-mandi, 8-crop demo set already exists. This
+  keeps reseeding idempotent without excessive CI disk usage.
 
 Part 0 created the required directory structure, baseline configuration files,
 starter documentation, and the master prompt.

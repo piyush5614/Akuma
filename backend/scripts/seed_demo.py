@@ -86,6 +86,22 @@ def stable_id(*parts: str) -> str:
 def seed(connection: sqlite3.Connection) -> dict[str, int]:
     random.seed(SEED)
     schema(connection)
+    existing_crops = connection.execute("SELECT COUNT(*) FROM crops").fetchone()[0]
+    existing_mandis = connection.execute("SELECT COUNT(*) FROM mandis").fetchone()[0]
+    existing_prices = connection.execute(
+        "SELECT COUNT(*) FROM price_reports WHERE record_type = 'DEMO'"
+    ).fetchone()[0]
+    existing_arrivals = connection.execute(
+        "SELECT COUNT(*) FROM arrival_reports WHERE record_type = 'DEMO'"
+    ).fetchone()[0]
+    if existing_crops == len(CROPS) and existing_mandis == len(MANDI_NAMES) and existing_prices and existing_arrivals:
+        connection.commit()
+        return {
+            "crops": existing_crops,
+            "mandis": existing_mandis,
+            "prices": existing_prices,
+            "arrivals": existing_arrivals,
+        }
     connection.execute("DELETE FROM price_reports WHERE record_type = 'DEMO'")
     connection.execute("DELETE FROM arrival_reports WHERE record_type = 'DEMO'")
     connection.execute("DELETE FROM crops")
@@ -102,8 +118,8 @@ def seed(connection: sqlite3.Connection) -> dict[str, int]:
         crop_id = crop[0]
         base = 900 + crop_index * 450
         for mandi_index, (mandi_id, _, _, _) in enumerate(MANDI_NAMES):
-            for day_offset in range(730):
-                current = today - timedelta(days=729 - day_offset)
+            for day_offset in range(365):
+                current = today - timedelta(days=364 - day_offset)
                 if random.random() < 0.035:
                     continue
                 seasonal = 1 + 0.16 * math.sin((current.timetuple().tm_yday + crop_index * 30) * 2 * math.pi / 365)

@@ -166,3 +166,9 @@
 - The redesign is presentation-only; backend contracts, pricing logic, and
   recommendation ranking remain unchanged.
 
+## Deterministic demo seeding
+
+- Demo history uses 365 deterministic days. Repeated seeding returns the existing
+  demo counts without deleting and recreating price and arrival history when
+  the 25-mandi, 8-crop demo structure is already present.
+
