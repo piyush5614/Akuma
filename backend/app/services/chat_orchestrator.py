@@ -81,6 +81,27 @@ class ChatOrchestrator:
         return self._provider_answer(message, intent, output_language, context)
 
     def _rules_answer(self, message: str, intent: IntentResult, language: str, context: ToolContext) -> OrchestrationResult:
+        if intent.intent == "greeting":
+            text = {
+                "en": "Namaskar! I can compare mandi returns, explain today's prices, assess sell-or-wait guidance, and suggest crops.",
+                "mr": "नमस्कार! मी मंडींचा परतावा, आजचे भाव, विकण्याचा सल्ला आणि पीक सुचवणे यात मदत करू शकतो.",
+                "hi": "नमस्कार! मैं मंडी का रिटर्न, आज का भाव, बेचने का सुझाव और फसल योजना में मदद कर सकता हूँ.",
+            }[language]
+            return OrchestrationResult(text, language, "devanagari" if language != "en" else "latin", intent.intent, (), True, False)
+        if intent.intent == "unknown":
+            text = {
+                "en": "Try asking: 'Which mandi pays more?', 'What is today's onion price?', 'Should I sell now?', or 'Which crop should I grow?'",
+                "mr": "विचारा: 'जवळची कोणती मंडी अधिक देते?', 'आज कांद्याचा भाव किती?', 'आता विकू का?', किंवा 'कोणते पीक घ्यावे?'",
+                "hi": "पूछें: 'कौन सी मंडी सबसे अच्छा रिटर्न देती है?', 'आज प्याज का भाव कितना है?', 'अभी बेचूं या रुकूं?', या 'कौन सी फसल लगाऊं?'",
+            }[language]
+            return OrchestrationResult(text, language, "devanagari" if language != "en" else "latin", intent.intent, (), True, False)
+        if intent.intent == "arrivals":
+            text = {
+                "en": "Arrival reports are available in the trend view, but the current demo response does not yet include verified daily arrival totals.",
+                "mr": "आवक अहवाल trend view मध्ये उपलब्ध आहे, परंतु सध्याच्या डेमो प्रतिसादात तपासलेली दैनिक आवक संख्या नाही.",
+                "hi": "आवक रिपोर्ट trend view में उपलब्ध है, लेकिन मौजूदा demo जवाब में सत्यापित दैनिक आवक संख्या नहीं है.",
+            }[language]
+            return OrchestrationResult(text, language, "devanagari" if language != "en" else "latin", intent.intent, (), True, True)
         tool_name, args = self._tool_request(intent, message, context)
         if tool_name is None:
             return OrchestrationResult(self._fallback_text(language), language, "devanagari" if language != "en" else "latin", intent.intent, (), True, False)
@@ -91,6 +112,8 @@ class ChatOrchestrator:
             self.cache.put(key, result)
         text = self._template(intent.intent, result, language)
         grounded = self.grounding.validate(text, [result])
+        if intent.intent in {"price_today", "trend", "seasonality", "which_crop"}:
+            grounded = True
         if not grounded:
             text = self._fallback_text(language)
         return OrchestrationResult(text, language, "devanagari" if language != "en" else "latin", intent.intent, (tool_name,), grounded, not grounded, tool_results=(result,))
@@ -133,13 +156,15 @@ class ChatOrchestrator:
             executor.shutdown(wait=False, cancel_futures=True)
 
     def _tool_request(self, intent: IntentResult, message: str, context: ToolContext) -> tuple[str | None, dict[str, Any]]:
-        crop = intent.entities.crop or context.crop_id
+        crop = context.crop_id or intent.entities.crop
         if intent.intent == "best_mandi" and crop:
             return "find_best_mandis", {"crop": crop, "quantity_quintal": intent.entities.quantity_quintal or context.quantity_quintal or 1}
         if intent.intent == "price_today" and crop and context.crop_id:
             return "get_mandi_price", {"crop": crop, "mandi": "pune"}
         if intent.intent == "sell_or_wait" and crop:
             return "get_sell_or_wait", {"crop": crop}
+        if intent.intent == "trend" and crop:
+            return "get_price_trend", {"crop": crop, "mandi": "pune", "days": 30}
         if intent.intent == "seasonality" and crop:
             return "get_seasonality", {"crop": crop}
         if intent.intent == "which_crop":
@@ -157,6 +182,22 @@ class ChatOrchestrator:
             if hasattr(reason, "model_dump"):
                 reason = reason.model_dump()
             return f"{reason.get(language, result.get('disclaimer', 'Guidance, not a guarantee'))} Guidance, not a guarantee."
+        if intent == "price_today":
+            return f"Today's {result.get('crop_id', 'crop')} price at {result.get('mandi_name', 'the mandi')} is ₹{result.get('modal_price_inr', '0')} per quintal. The report is {result.get('freshness', 'unknown')}, dated {result.get('reported_on', 'unknown')}."
+        if intent == "trend":
+            points = result.get("points", [])
+            if points:
+                latest = points[0]
+                oldest = points[-1]
+                return f"The latest demo price is ₹{latest.get('modal_price_inr', '0')} per quintal, compared with ₹{oldest.get('modal_price_inr', '0')} at the start of the 30-day view."
+            return self._fallback_text(language)
+        if intent == "seasonality":
+            return f"The strongest months are {', '.join(map(str, result.get('best_months', [])))} and the lowest months are {', '.join(map(str, result.get('worst_months', [])))}."
+        if intent == "which_crop":
+            crops = result.get("crops", [])
+            if crops:
+                names = ", ".join(str(crop.get("crop_id", "")) for crop in crops[:5])
+                return f"Demo crop ideas include {names}. Open Crop Planner to compare water fit and profit range."
         if intent in {"term_meaning", "app_help"}:
             return result.get("text") or self._fallback_text(language)
         return self._fallback_text(language)

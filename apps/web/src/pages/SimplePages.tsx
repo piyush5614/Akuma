@@ -4,7 +4,6 @@ import { BarChart3, Database, FileSpreadsheet, RefreshCw, RotateCcw, Save, Setti
 import { api, type AdminSettings } from "../api/client";
 import { IndiaMap } from "../components/IndiaMap";
 import { EmptyState, ErrorState, LoadingState } from "../components/State";
-import { useLiveLocation } from "../hooks/useLiveLocation";
 
 function PageTitle({ eyebrow, title, text, actions }: { eyebrow: string; title: string; text: string; actions?: React.ReactNode }) {
   return <div className="page-heading-row"><div><span className="eyebrow">{eyebrow}</span><h1>{title}</h1><p>{text}</p></div>{actions}</div>;
@@ -42,15 +41,22 @@ export function Insights() {
 }
 
 export function Regions() {
-  const liveLocation = useLiveLocation();
   const [crop, setCrop] = useState("onion");
   const crops = useQuery({ queryKey: ["crops"], queryFn: api.crops });
   const regions = useQuery({ queryKey: ["regions", crop], queryFn: () => api.regions(crop) });
-  const mandis = useQuery({ queryKey: ["mandis", crop, liveLocation.location.lat, liveLocation.location.lng], queryFn: () => api.mandis(crop, liveLocation.location) });
+  const nationalMandis = (regions.data?.data ?? []).map((region) => ({
+    id: region.region_id,
+    name: region.name,
+    district: region.name,
+    state: "India",
+    freshness: region.freshness,
+    modal_price_inr: region.average_modal_price_inr,
+    location: region.location,
+  }));
   return <>
     <PageTitle eyebrow="REGIONS" title="Compare market districts" text="District activity and modal prices for your selected crop." actions={<label className="page-select"><Sprout size={16} /><select value={crop} onChange={(event) => setCrop(event.target.value)} aria-label="Crop">{crops.data?.data.map((item) => <option value={item.id} key={item.id}>{item.name.en}</option>)}</select></label>} />
     <div className="region-layout">
-      <section className="card region-map"><IndiaMap mandis={mandis.data?.data ?? []} /><div className="map-legend"><span><i className="legend-dot fresh-dot" />Fresh</span><span><i className="legend-dot stale-dot" />Stale</span><span><i className="legend-dot old-dot" />Old</span><small>OpenStreetMap · DEMO reports</small></div></section>
+      <section className="card region-map"><IndiaMap mandis={nationalMandis} /><div className="map-legend"><span><i className="legend-dot fresh-dot" />Fresh</span><span><i className="legend-dot stale-dot" />Stale</span><span><i className="legend-dot old-dot" />Old</span><small>OpenStreetMap · national DEMO markets</small></div></section>
       <aside className="card region-panel"><div className="section-title"><div><span className="eyebrow">DISTRICT SUMMARY</span><h2>Regional activity</h2></div><Database size={18} /></div>
         {regions.isPending ? <LoadingState /> : regions.isError ? <ErrorState error={regions.error} retry={() => void regions.refetch()} /> : regions.data.data.length ? <div className="region-list">{regions.data.data.map((region) => <div className="region-row" key={region.region_id}><div><strong>{region.name}</strong><span>{region.mandi_count} mandi{region.mandi_count === 1 ? "" : "s"}</span></div><strong>₹{region.average_modal_price_inr ? Number(region.average_modal_price_inr).toLocaleString("en-IN") : "—"}</strong></div>)}</div> : <EmptyState />}
       </aside>

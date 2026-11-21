@@ -28,6 +28,30 @@ The checked-in Gradle wrapper is usable on Windows. The Part 10 verification
 completed `assembleDebug`, `testDebugUnitTest`, and `lintDebug`; the generated
 debug APK is copied to `artifacts/FairFarm-debug.apk`.
 
+## Install the APK on a phone
+
+The fastest install path is USB debugging:
+
+1. Enable **Developer options** and **USB debugging** on the Android phone.
+2. Connect the phone to this computer and accept the debugging prompt.
+3. Run:
+
+```powershell
+$adb = "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe"
+& $adb install -r "C:\Users\asus4\Desktop\FairFarm\artifacts\FairFarm-debug.apk"
+```
+
+Alternatively, copy `artifacts/FairFarm-debug.apk` to the phone using a USB
+file transfer, Google Drive, or another approved transfer method. Open the
+APK in the phone's Files app, allow installation from that source, and
+approve the install prompt.
+
+For a physical phone, the default emulator address `10.0.2.2` does not point
+to the development computer. Set the app's `BASE_URL` to
+`http://<computer-LAN-IP>:8000/api/v1`, rebuild, and keep the phone and
+computer on the same Wi-Fi network. Allow TCP port 8000 through Windows
+Firewall and start the backend with `--host 0.0.0.0`.
+
 ## Saathi chat
 
 The Home tab now groups the common crop catalogue by vegetable, grain, and

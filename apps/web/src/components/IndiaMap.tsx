@@ -4,12 +4,13 @@ import { CircleMarker, MapContainer, Marker, Polyline, Popup, TileLayer, useMap 
 import type { Mandi } from "../api/client";
 import "leaflet/dist/leaflet.css";
 
-type Props = { mandis: Mandi[]; farmerLocation?: { lat: number; lng: number }; selectedId?: string; onSelect?: (mandiId: string) => void };
+type Props = { mandis: Mandi[]; farmerLocation?: { lat: number; lng: number }; selectedId?: string; onSelect?: (mandiId: string) => void; markerTextById?: Record<string, string> };
 
 function FitMandis({ mandis, farmerLocation }: Pick<Props, "mandis" | "farmerLocation">) {
   const map = useMap();
   useEffect(() => {
-    const points: [number, number][] = mandis.slice(0, 5).map((mandi) => [mandi.location.lat, mandi.location.lng]);
+    const fitMandis = farmerLocation ? mandis.slice(0, 5) : mandis;
+    const points: [number, number][] = fitMandis.map((mandi) => [mandi.location.lat, mandi.location.lng]);
     if (farmerLocation) points.push([farmerLocation.lat, farmerLocation.lng]);
     if (points.length === 1) map.setView(points[0], 10);
     else if (points.length > 1) map.fitBounds(points, { padding: [48, 48], maxZoom: 12 });
@@ -17,7 +18,7 @@ function FitMandis({ mandis, farmerLocation }: Pick<Props, "mandis" | "farmerLoc
   return null;
 }
 
-export function IndiaMap({ mandis, farmerLocation, selectedId, onSelect }: Props) {
+export function IndiaMap({ mandis, farmerLocation, selectedId, onSelect, markerTextById }: Props) {
   const selected = mandis.find((mandi) => mandi.id === selectedId);
   return <MapContainer className="india-map" center={farmerLocation ? [farmerLocation.lat, farmerLocation.lng] : [22.5, 79]} zoom={farmerLocation ? 9 : 5} scrollWheelZoom>
     <TileLayer
@@ -36,7 +37,7 @@ export function IndiaMap({ mandis, farmerLocation, selectedId, onSelect }: Props
       const rank = index + 1;
       const icon = new DivIcon({
         className: "price-marker-icon",
-        html: `<span class="price-marker ${mandi.freshness.toLowerCase()} ${selectedId === mandi.id ? "selected" : ""}"><b>${rank}</b><strong>${mandi.modal_price_inr ? `₹${Number(mandi.modal_price_inr).toLocaleString("en-IN")}/q` : mandi.name}</strong></span>`,
+        html: `<span class="price-marker ${mandi.freshness.toLowerCase()} ${selectedId === mandi.id ? "selected" : ""}"><b>${rank}</b><strong>${markerTextById?.[mandi.id] ?? (mandi.modal_price_inr ? `₹${Number(mandi.modal_price_inr).toLocaleString("en-IN")}/q` : mandi.name)}</strong></span>`,
         iconSize: [116, 38],
         iconAnchor: [58, 38],
       });

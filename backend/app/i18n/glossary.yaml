@@ -24,6 +24,60 @@ entries:
   - id: pomegranate
     canonical: pomegranate
     aliases: [pomegranate, डाळिंब, अनार, dalimb, anar]
+  - id: potato
+    canonical: potato
+    aliases: [potato, बटाटा, आलू, aloo, batata]
+  - id: cabbage
+    canonical: cabbage
+    aliases: [cabbage, कोबी, पत्तागोभी, pattagobhi]
+  - id: cauliflower
+    canonical: cauliflower
+    aliases: [cauliflower, फ्लॉवर, फूलगोभी, fulkobi]
+  - id: okra
+    canonical: okra
+    aliases: [okra, भेंडी, भिंडी, bhendi, bhindi]
+  - id: brinjal
+    canonical: brinjal
+    aliases: [brinjal, वांगी, बैंगन, baingan, eggplant]
+  - id: green_chilli
+    canonical: green_chilli
+    aliases: [green chilli, हिरवी मिरची, हरी मिर्च, mirchi]
+  - id: rice
+    canonical: rice
+    aliases: [rice, तांदूळ, चावल, tandul, chawal]
+  - id: maize
+    canonical: maize
+    aliases: [maize, मका, मक्का, makka]
+  - id: banana
+    canonical: banana
+    aliases: [banana, केळी, केला, keli, kela]
+  - id: mango
+    canonical: mango
+    aliases: [mango, आंबा, आम, aam, amba]
+  - id: grapes
+    canonical: grapes
+    aliases: [grapes, द्राक्षे, अंगूर, draksha, angur]
+  - id: orange
+    canonical: orange
+    aliases: [orange, संत्रे, संतरा, santre, santra]
+  - id: cotton
+    canonical: cotton
+    aliases: [cotton, कापूस, कपास, kapus]
+  - id: turmeric
+    canonical: turmeric
+    aliases: [turmeric, हळद, हल्दी, halad, haldi]
+  - id: groundnut
+    canonical: groundnut
+    aliases: [groundnut, मूंगफली, mungfali, peanut]
+  - id: sunflower
+    canonical: sunflower
+    aliases: [sunflower, सूर्यफूल, सूरजमुखी, suryaphool]
+  - id: sugarcane
+    canonical: sugarcane
+    aliases: [sugarcane, ऊस, गन्ना, us, ganna]
+  - id: barley
+    canonical: barley
+    aliases: [barley, जव, जौ, jav, jau]
   - id: quintal
     canonical: quintal
     aliases: [quintal, क्विंटल, quintals]

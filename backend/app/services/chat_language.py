@@ -66,9 +66,13 @@ def _load_glossary() -> tuple[GlossaryEntry, ...]:
 
 
 GLOSSARY = _load_glossary()
-_CROPS = {entry.canonical: entry for entry in GLOSSARY if entry.canonical in {
-    "onion", "tomato", "soybean", "wheat", "jowar", "gram", "cotton", "pomegranate"
-}}
+_CROP_IDS = {
+    "onion", "tomato", "potato", "cabbage", "cauliflower", "okra", "brinjal",
+    "green_chilli", "wheat", "rice", "maize", "soybean", "jowar", "gram",
+    "cotton", "turmeric", "groundnut", "sunflower", "sugarcane", "barley",
+    "banana", "mango", "pomegranate", "grapes", "orange",
+}
+_CROPS = {entry.canonical: entry for entry in GLOSSARY if entry.canonical in _CROP_IDS}
 _UNITS = {entry.canonical: entry for entry in GLOSSARY if entry.conversion_to_quintal is not None}
 _MARKET_CANONICALS = {"market_rate", "market", "nearby"}
 _MARATHI_MARKERS = {"mazha", "mazhya", "kandyala", "kuthe", "changala", "vik", "thambu", "pike", "javalpass"}
@@ -145,6 +149,8 @@ _INTENT_TERMS: dict[str, tuple[str, ...]] = {
     "sell_or_wait": ("sell now", "should i sell", "sell or wait", "wait before", "wait or sell", "hold", "is selling now", "better to sell", "can i sell", "time to sell", "whether to sell", "do i sell", "waiting help", "विकू", "विकू का", "बेचूं", "थांबू"),
     "which_crop": ("which crop", "what crop", "what to grow", "what should i", "what can i plant", "suggest a crop", "recommend a crop", "crop suggestion", "best crop", "choose a crop", "पीक", "फसल", "लगाऊं"),
     "seasonality": ("season", "seasonal", "seasonality", "price rise", "prices rise", "higher prices", "prices higher", "usually rise", "which month", "what months", "हंगाम", "मौसम", "कधी वाढ"),
+    "trend": ("price trend", "trend", "last 7 days", "past week", "weekly trend", "month trend", "past 30 days", "कल किती", "भाव कल"),
+    "arrivals": ("arrival", "arrivals", "arrival report", "how much supply", "supply", "टक्का", "आवक"),
     "best_mandi": (
         "best mandi", "which mandi", "nearby mandi", "nearby mandis", "nearby market", "where sell", "where should i sell", "where can i get", "which market", "best place to sell",
         "help me choose a mandi", "compare mandis", "mandi ranking", "highest return", "best net return", "kahan", "bechun", "मंडी", "मंडीत",

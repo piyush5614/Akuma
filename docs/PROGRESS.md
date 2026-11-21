@@ -32,6 +32,11 @@
 - [x] Redesigned Overview, Explorer, Regions, Insights, Data, Settings, Query Log and Saathi page surfaces
 - [ ] Android visual alignment
 - [ ] Full i18n copy audit
+- Added 31 demo crops and 52 demo regional/national market locations for the
+  in-memory API runtime.
+- Added interactive Explorer map layers and a national Regions map view.
+- Expanded Saathi intent coverage for greetings, crop planning, prices,
+  trends, seasonality, sell/wait guidance, and fallback suggestions.
 
 Part 0 created the required directory structure, baseline configuration files,
 starter documentation, and the master prompt.

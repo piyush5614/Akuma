@@ -259,7 +259,16 @@ def chat(request: SaathiChatRequest | ChatRequest, http_request: Request):
         session_id=session_id,
         reply={"text": result.text, "speak_text": result.text, "language": result.language, "script": result.script},
         cards=[],
-        chips=["Show today's price", "Should I sell now?"],
+        chips={
+            "best_mandi": ["Show today's price", "Should I sell now?", "Explain net profit"],
+            "price_today": ["Compare nearby markets", "Show 30-day trend", "Should I sell now?"],
+            "sell_or_wait": ["Show the price trend", "Why is there uncertainty?", "Find the best mandi"],
+            "trend": ["Should I sell now?", "Show seasonality", "Compare nearby markets"],
+            "seasonality": ["Which crop should I grow?", "Show crop profit", "Find the best mandi"],
+            "which_crop": ["Compare my crop options", "Check water fit", "Find a nearby mandi"],
+            "greeting": ["Which mandi pays more?", "What is today's price?", "Which crop should I grow?"],
+            "unknown": ["Use Saathi help", "Find the best mandi", "What is a quintal?"],
+        }.get(result.intent, ["Find the best mandi", "Show today's price", "Explain net profit"]),
         meta={
             "intent": result.intent,
             "tools_used": list(result.tools_used),

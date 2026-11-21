@@ -32,6 +32,7 @@ export function Saathi() {
   ]);
   const [flowError, setFlowError] = useState("");
   const [listening, setListening] = useState(false);
+  const [suggestedChips, setSuggestedChips] = useState<string[]>(starters);
 
   useEffect(() => {
     const saved = localStorage.getItem("fairfarm_saathi_history");
@@ -84,8 +85,9 @@ export function Saathi() {
     setMessages((current) => [...current, { role: "user", text: message }]);
     setSending(true);
     try {
-      const response = await api.saathiChat(message, sessionId, location);
+      const response = await api.saathiChat(message, sessionId, location, selectedCrop, Number(quantity) || 10);
       setSessionId(response.data.session_id);
+      setSuggestedChips(response.data.chips);
       setMessages((current) => [...current, {
         role: "assistant",
         text: response.data.reply.text,
@@ -167,7 +169,7 @@ export function Saathi() {
           {sending && <div className="chat-message assistant"><div className="message-avatar"><Bot size={15} /></div><div className="message-body typing"><i /><i /><i /></div></div>}
         </div>
         {error && <div className="chat-error">{error}</div>}
-        <div className="starter-row">{starters.map((starter) => <button type="button" key={starter} onClick={() => selectStarter(starter)}>{starter}</button>)}</div>
+        <div className="starter-row">{suggestedChips.map((starter) => <button type="button" key={starter} onClick={() => selectStarter(starter)}>{starter}</button>)}</div>
         <form className="chat-composer" onSubmit={(event) => void sendMessage(event)}>
           <textarea aria-label="Message Saathi" value={input} onChange={(event) => setInput(event.target.value)} placeholder="Message Saathi..." rows={1} maxLength={500} />
           <button type="button" aria-label={listening ? "Listening" : "Use microphone"} className={listening ? "mic-button listening" : "mic-button"} onClick={listen}><Mic size={18} /></button>
