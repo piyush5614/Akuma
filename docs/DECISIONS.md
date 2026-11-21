@@ -80,6 +80,17 @@
   user-facing update message when the installed app is below the backend
   minimum version.
 
+## Repair redesign visual pass
+
+- The web redesign keeps FairFarm's agriculture domain while adopting the
+  supplied reference's fixed-sidebar administration structure, pale canvas,
+  cobalt identity, compact KPI cards, soft borders, and restrained status
+  palette.
+- Blue is the primary interactive and answer colour. Lime remains a small
+  brand accent, consistent with the existing FairFarm identity.
+- The existing backend and API contract remain authoritative. The redesign
+  adds no client-side price or ranking calculations.
+
 ## Part 8
 
 - Compose includes PostgreSQL as the target database service and a persistent

@@ -24,6 +24,15 @@
 - [ ] Part 6 - Integration and end-to-end checks
 - [ ] Part 7 - Final QA, docs and release
 
+## Repair redesign web pass
+
+- [x] Reference-template visual foundation for the web dashboard
+- [x] Professional FairFarm login and auth guard
+- [x] Fixed white sidebar and cobalt utility shell
+- [x] Redesigned Overview, Explorer, Regions, Insights, Data, Settings, Query Log and Saathi page surfaces
+- [ ] Android visual alignment
+- [ ] Full i18n copy audit
+
 Part 0 created the required directory structure, baseline configuration files,
 starter documentation, and the master prompt.
 

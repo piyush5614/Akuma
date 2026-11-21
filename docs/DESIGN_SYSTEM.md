@@ -1,5 +1,14 @@
 # FairFarm design system
 
+## Repair redesign: professional administration variant
+
+The web implementation follows the supplied reference-template visual
+language: a 248 px fixed white sidebar, pale blue-grey canvas, cobalt
+primary actions and answer banners, compact 14–26 px card spacing, soft
+1 px borders, 12–16 px card radii, and 48 px interactive controls. Status
+cards use pale blue, green, purple, red, and amber surfaces. Lime remains
+a small brand accent rather than the primary product colour.
+
 ## Brand direction
 
 FairFarm is calm, practical, and confident: deep forest ink on a warm ivory

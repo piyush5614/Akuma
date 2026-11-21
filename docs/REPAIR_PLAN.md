@@ -59,3 +59,22 @@
   the local process allowed.
 - No tracked junk was found by `git ls-files -ci --exclude-standard`.
 - Production startup now rejects weak `JWT_SECRET` and `ADMIN_PASSWORD` values.
+
+## Web redesign verification
+
+- Replaced the FairFarm shell and login with the reference-derived professional
+  blue administration system.
+- Rebuilt Overview, Explorer, Regions, Insights, Data, Settings, Query Log,
+  and Saathi page surfaces.
+- Added an auth guard and logout control around protected dashboard routes.
+- Added a linked recommendation/map/detail layout and Saathi voice/feedback
+  controls.
+- Verified at desktop and 390 px widths in-browser with no horizontal overflow.
+- Backend tests: 88 passed.
+- Backend Ruff: passed.
+- Web lint/typecheck: passed.
+- Web Vitest: 2 passed.
+- Web production build: passed.
+- OpenAPI contract check: 18 operations present.
+- Live E2E check: 14 endpoint groups, 5 recommendation samples, 3 languages,
+  CORS, ranking, and validation passed.

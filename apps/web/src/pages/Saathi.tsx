@@ -1,8 +1,11 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
-import { Bot, MapPin, Send, ShieldCheck, Sparkles } from "lucide-react";
+import { Bot, MapPin, Mic, Send, ShieldCheck, Sparkles, ThumbsDown, ThumbsUp, Volume2 } from "lucide-react";
 import { api, Crop, LocationContext, RecommendResult } from "../api/client";
 
-type Message = { role: "user" | "assistant"; text: string; intent?: string; grounded?: boolean };
+type Message = { role: "user" | "assistant"; text: string; intent?: string; grounded?: boolean; requestId?: string };
+type SpeechResultEvent = { results: ArrayLike<{ 0: { transcript: string } }> };
+type SpeechRecognitionInstance = { continuous: boolean; interimResults: boolean; lang: string; start: () => void; stop: () => void; onresult: ((event: SpeechResultEvent) => void) | null; onend: (() => void) | null };
+type SpeechRecognitionConstructor = new () => SpeechRecognitionInstance;
 
 const starters = [
   "Which nearby mandi gives the best net return?",
@@ -28,6 +31,18 @@ export function Saathi() {
     { role: "assistant", text: "Namaskar! I’m Saathi. Ask me which mandi pays more, today’s price, or whether to sell now." },
   ]);
   const [flowError, setFlowError] = useState("");
+  const [listening, setListening] = useState(false);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("fairfarm_saathi_history");
+    if (saved) {
+      try { setMessages(JSON.parse(saved) as Message[]); } catch { localStorage.removeItem("fairfarm_saathi_history"); }
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("fairfarm_saathi_history", JSON.stringify(messages));
+  }, [messages]);
 
   useEffect(() => {
     void api.crops().then((response) => setCrops(response.data)).catch(() => setFlowError("Crop catalogue could not be loaded."));
@@ -76,6 +91,7 @@ export function Saathi() {
         text: response.data.reply.text,
         intent: response.data.meta.intent,
         grounded: response.data.meta.grounded,
+        requestId: response.data.meta.request_id,
       }]);
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "Saathi could not answer right now.");
@@ -86,6 +102,39 @@ export function Saathi() {
 
   function selectStarter(starter: string) {
     setInput(starter);
+  }
+
+  function speak(text: string) {
+    if (!("speechSynthesis" in window)) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "en-IN";
+    window.speechSynthesis.speak(utterance);
+  }
+
+  function listen() {
+    const speechWindow = window as unknown as { SpeechRecognition?: SpeechRecognitionConstructor; webkitSpeechRecognition?: SpeechRecognitionConstructor };
+    const Recognition = speechWindow.SpeechRecognition ?? speechWindow.webkitSpeechRecognition;
+    if (!Recognition) {
+      setError("Voice input is not supported in this browser.");
+      return;
+    }
+    const recognition = new Recognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = "en-IN";
+    recognition.onresult = (event) => {
+      const transcript = event.results[0]?.[0]?.transcript;
+      if (transcript) setInput(transcript);
+    };
+    recognition.onend = () => setListening(false);
+    setListening(true);
+    recognition.start();
+  }
+
+  async function feedback(message: Message, rating: "up" | "down") {
+    if (!message.requestId) return;
+    try { await api.saathiFeedback(message.requestId, rating); } catch { return; }
   }
 
   return <div className="saathi-page">
@@ -107,11 +156,13 @@ export function Saathi() {
     </section>
     <div className="saathi-layout">
       <section className="chat-shell">
-        <div className="chat-header"><div className="saathi-avatar"><Bot size={20} /></div><div><strong>Saathi</strong><span>FairFarm AI assistant</span></div><Sparkles size={18} className="chat-sparkle" /></div>
+        <div className="chat-header"><div className="saathi-avatar"><Bot size={20} /></div><div><strong>Saathi</strong><span>FairFarm AI assistant</span></div><button type="button" className="chat-clear" onClick={() => setMessages([{ role: "assistant", text: "Chat history cleared. How can I help?" }])}>Clear chat</button><Sparkles size={18} className="chat-sparkle" /></div>
         <div className="chat-messages">
           {messages.map((message, index) => <div className={`chat-message ${message.role}`} key={`${message.role}-${index}`}>
             {message.role === "assistant" && <div className="message-avatar"><Bot size={15} /></div>}
-            <div className="message-body"><p>{message.text}</p>{message.intent && <small>{message.intent}{message.grounded ? " · grounded" : " · fallback"}</small>}</div>
+            <div className="message-body"><p>{message.text}</p>{message.intent && <small>{message.intent}{message.grounded ? " · grounded" : " · fallback"}</small>}
+              {message.role === "assistant" && <div className="message-actions"><button type="button" aria-label="Read message aloud" onClick={() => speak(message.text)}><Volume2 size={14} /></button>{message.requestId && <><button type="button" aria-label="Helpful answer" onClick={() => void feedback(message, "up")}><ThumbsUp size={14} /></button><button type="button" aria-label="Unhelpful answer" onClick={() => void feedback(message, "down")}><ThumbsDown size={14} /></button></>}</div>}
+            </div>
           </div>)}
           {sending && <div className="chat-message assistant"><div className="message-avatar"><Bot size={15} /></div><div className="message-body typing"><i /><i /><i /></div></div>}
         </div>
@@ -119,6 +170,7 @@ export function Saathi() {
         <div className="starter-row">{starters.map((starter) => <button type="button" key={starter} onClick={() => selectStarter(starter)}>{starter}</button>)}</div>
         <form className="chat-composer" onSubmit={(event) => void sendMessage(event)}>
           <textarea aria-label="Message Saathi" value={input} onChange={(event) => setInput(event.target.value)} placeholder="Message Saathi..." rows={1} maxLength={500} />
+          <button type="button" aria-label={listening ? "Listening" : "Use microphone"} className={listening ? "mic-button listening" : "mic-button"} onClick={listen}><Mic size={18} /></button>
           <button type="submit" aria-label="Send message" disabled={!input.trim() || sending}><Send size={18} /></button>
         </form>
         <p className="chat-disclaimer"><ShieldCheck size={14} /> Guidance only, not a guarantee · Demo market data</p>
