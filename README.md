@@ -54,8 +54,10 @@ The verified debug APK is copied to `artifacts/FairFarm-debug.apk`.
 1. Select a crop, quantity, and location in the farmer app or dashboard.
 2. The API ranks nearby mandis by estimated total net return.
 3. Review freshness labels, distance, costs, and the sell-now-or-wait guidance.
-4. Use the dashboard for price exploration, insights, data import preview,
-   settings, query history, and the authenticated Saathi admin test console.
+4. Use the live OpenStreetMap India view to inspect mandi markers and
+   freshness.
+5. Use Saathi as a conversational chatbox for mandi, price, and sell-or-wait
+   questions.
 
 ## API and project docs
 

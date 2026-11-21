@@ -9,6 +9,7 @@ export interface RecommendResult { recommendations: Recommendation[]; old_mandis
 export interface AdminSettings { road_factor: string; transport_rate_per_quintal_km: string; fee_pct: string; shrinkage_pct_by_crop: Record<string, string> }
 export interface SaathiMetrics { messages_per_day: Record<string, number>; messages_by_language: Record<Language, number>; top_intents: Record<string, number>; fallback_rate: number; refusal_rate: number; grounding_failure_count: number; thumbs_ratio: { up: number; down: number }; unanswered_questions: string[]; provider: string; mode: string }
 export interface SaathiTestResult { reply: string; language: Language; intent: string; tools_used: string[]; tool_results: Array<Record<string, unknown>>; grounded: boolean; fallback_used: boolean }
+export interface SaathiChatResult { session_id: string; reply: { text: string; speak_text: string; language: Language; script: "latin" | "devanagari" }; cards: Array<Record<string, unknown>>; chips: string[]; meta: { intent: string; tools_used: string[]; grounded: boolean; fallback_used: boolean; request_id: string } }
 
 const API_URL = window.__FAIRFARM_CONFIG__?.API_URL ?? import.meta.env.VITE_API_URL ?? "http://localhost:8000/api/v1";
 
@@ -44,5 +45,6 @@ export const api = {
   login: (email: string, password: string) => request<{ access_token: string }>("/auth/login", { method: "POST", body: JSON.stringify({ email, password }) }),
   updateSettings: (settings: AdminSettings) => request<AdminSettings>("/admin/settings", { method: "PUT", body: JSON.stringify(settings) }),
   saathiMetrics: () => request<SaathiMetrics>("/admin/saathi/metrics"),
+  saathiChat: (message: string, sessionId?: string) => request<SaathiChatResult>("/chat", { method: "POST", body: JSON.stringify({ message, session_id: sessionId, ui_language: "auto", context: { lat: 18.52, lng: 73.86, crop_id: "onion", quantity_quintal: 10 }, client: { platform: "web", app_version: "0.1.0" } }) }),
   saathiTest: (message: string, cropId: string, quantity: number) => request<SaathiTestResult>("/admin/saathi/test", { method: "POST", body: JSON.stringify({ message, ui_language: "auto", context: { lat: 18.52, lng: 73.86, crop_id: cropId, quantity_quintal: quantity }, client: { platform: "web", app_version: "0.1.0" } }) }),
 };
