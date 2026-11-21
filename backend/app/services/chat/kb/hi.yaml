@@ -1,0 +1,42 @@
+language: hi
+entries:
+  - id: term.net_profit
+    kind: term
+    keywords: [शुद्ध लाभ, शुद्ध कमाई, net profit]
+    text: "शुद्ध कमाई मंडी भाव में से परिवहन, बाजार शुल्क और फसल की कमी घटाने के बाद बची रकम है।"
+  - id: term.modal_price
+    kind: term
+    keywords: [मोडल भाव, modal price]
+    text: "मोडल भाव मंडी में सबसे अधिक बार दर्ज किया गया भाव है।"
+  - id: term.freshness
+    kind: term
+    keywords: [ताज़गी, ताजा, पुरानी रिपोर्ट]
+    text: "ताज़गी बताती है कि रिपोर्ट कितनी नई है: FRESH, STALE, OLD या NO_REPORT।"
+  - id: term.assumptions
+    kind: term
+    keywords: [मान्यताएँ, अनुमान]
+    text: "परिवहन दर और फसल की कमी जैसी बातें मान्यताएँ हैं। डेमो मान्यताएँ DEMO के रूप में दिखती हैं।"
+  - id: help.home
+    kind: help
+    keywords: [होम, शुरुआत, किसान]
+    text: "होम पर फसल, मात्रा और स्थान चुनें। पास की मंडियों की तुलना मिलेगी।"
+  - id: help.result
+    kind: help
+    keywords: [नतीजा, सुझाव, रैंकिंग]
+    text: "नतीजे में मंडियाँ अनुमानित कुल शुद्ध कमाई के अनुसार दिखाई जाती हैं।"
+  - id: help.explorer
+    kind: help
+    keywords: [भाव खोजक, नक्शा, मंडी]
+    text: "भाव खोजक मंडियों के दर्ज भाव और ताज़गी दिखाता है।"
+  - id: help.insights
+    kind: help
+    keywords: [अंतर्दृष्टि, मौसम, फसल]
+    text: "अंतर्दृष्टि में भाव का रुझान, मौसमी पैटर्न और फसल लाभ की सीमा दिखती है।"
+  - id: help.settings
+    kind: help
+    keywords: [सेटिंग्स, भाषा, स्थान]
+    text: "सेटिंग्स में भाषा और ऐप की पसंद चुनें।"
+  - id: help.offline
+    kind: help
+    keywords: [ऑफलाइन, इंटरनेट, कनेक्शन]
+    text: "ऑफलाइन होने पर पहले के नतीजे पढ़े जा सकते हैं। कनेक्शन आने पर नया सवाल भेजें।"

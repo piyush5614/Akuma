@@ -1,0 +1,18 @@
+version: 1
+strings:
+  greeting:
+    en: {text: "Hello. I can help compare mandi returns, prices, and selling guidance.", needs_native_review: true}
+    mr: {text: "नमस्कार. मी मंडीचा परतावा, भाव आणि विक्री मार्गदर्शनात मदत करू शकतो.", needs_native_review: true}
+    hi: {text: "नमस्ते। मैं मंडी रिटर्न, भाव और बिक्री मार्गदर्शन में मदद कर सकता हूँ।", needs_native_review: true}
+  no_data:
+    en: {text: "I could not find a current report. Try another mandi or crop.", needs_native_review: true}
+    mr: {text: "मला सध्याचा अहवाल मिळाला नाही. दुसरी मंडी किंवा पीक निवडा.", needs_native_review: true}
+    hi: {text: "मुझे वर्तमान रिपोर्ट नहीं मिली। दूसरी मंडी या फसल आज़माएँ।", needs_native_review: true}
+  guidance_disclaimer:
+    en: {text: "Guidance, not a guarantee.", needs_native_review: true}
+    mr: {text: "हे मार्गदर्शन आहे, हमी नाही.", needs_native_review: true}
+    hi: {text: "यह मार्गदर्शन है, गारंटी नहीं।", needs_native_review: true}
+  out_of_scope:
+    en: {text: "I can help with mandi prices, returns, trends, and using FairFarm. For this question, contact your local Krishi Vigyan Kendra.", needs_native_review: true}
+    mr: {text: "मी मंडीचे भाव, परतावा, कल आणि FairFarm वापरण्यात मदत करू शकतो. या प्रश्नासाठी जवळच्या कृषी विज्ञान केंद्राशी संपर्क करा.", needs_native_review: true}
+    hi: {text: "मैं मंडी भाव, रिटर्न, रुझान और FairFarm के उपयोग में मदद कर सकता हूँ। इस सवाल के लिए स्थानीय कृषि विज्ञान केंद्र से संपर्क करें।", needs_native_review: true}

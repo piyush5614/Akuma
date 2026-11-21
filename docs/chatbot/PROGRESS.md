@@ -1,7 +1,7 @@
 # FairFarm Saathi progress
 
 - [x] Part 0 - Discovery and design doc
-- [ ] Part 1 - Contract, schemas, glossary and knowledge base
+- [x] Part 1 - Contract, schemas, glossary and knowledge base
 - [ ] Part 2 - Language layer
 - [ ] Part 3 - Orchestrator, providers, tools, grounding and safety
 - [ ] Part 4 - API endpoints, sessions and limits
@@ -22,3 +22,13 @@ The feature prompt's requested chat contract is broader than the existing
 backend behavior, and client integrations as one traced change. Current
 trend, seasonality, crop-profit, and recommendation data are demo/in-memory
 services and must remain explicitly labeled.
+
+## Part 1 result
+
+Added the Saathi request, response, typed card, feedback, and starter schemas
+while retaining the legacy chat models until the runtime migration. Extended
+the API contract with the new chat payload and starter/feedback endpoints.
+Added crop/unit/market glossary entries, localized canned strings marked for
+native review, and curated English, Marathi, and Hindi knowledge-base entries
+for terms, screens, settings, and offline behavior. Runtime endpoint wiring is
+intentionally deferred to Part 4.

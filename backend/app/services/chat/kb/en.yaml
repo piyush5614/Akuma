@@ -1,0 +1,42 @@
+language: en
+entries:
+  - id: term.net_profit
+    kind: term
+    keywords: [net profit, net earning, net return]
+    text: "Net earning is the mandi price after estimated transport, market fee, and crop shrinkage."
+  - id: term.modal_price
+    kind: term
+    keywords: [modal price, modal rate]
+    text: "Modal price is the most commonly reported price for a crop at a mandi."
+  - id: term.freshness
+    kind: term
+    keywords: [freshness, fresh, stale, old, no report]
+    text: "Freshness tells you how recently the mandi reported a price: FRESH, STALE, OLD, or NO_REPORT."
+  - id: term.assumptions
+    kind: term
+    keywords: [assumption, assumptions]
+    text: "Assumptions are estimates such as transport rate and shrinkage. Demo assumptions are labeled DEMO."
+  - id: help.home
+    kind: help
+    keywords: [home, start, farmer]
+    text: "Choose a crop, quantity, and location on Home to compare nearby mandis."
+  - id: help.result
+    kind: help
+    keywords: [result, recommendation, ranking]
+    text: "The result ranks mandis by estimated total net return and shows costs and freshness."
+  - id: help.explorer
+    kind: help
+    keywords: [explorer, map, mandi]
+    text: "Price Explorer compares reported prices and freshness across mandis."
+  - id: help.insights
+    kind: help
+    keywords: [insights, seasonality, crop]
+    text: "Insights shows trends, seasonal patterns, and crop profit ranges."
+  - id: help.settings
+    kind: help
+    keywords: [settings, language, location]
+    text: "Settings lets you choose language and review app preferences."
+  - id: help.offline
+    kind: help
+    keywords: [offline, internet, connection]
+    text: "When offline, previously loaded results remain readable; send a new question after reconnecting."

@@ -1,0 +1,50 @@
+version: 1
+entries:
+  - id: onion
+    canonical: onion
+    aliases: [onion, कांदा, कांद्याला, कांद्याचा, kanda, kandyala, प्याज, pyaaz]
+  - id: tomato
+    canonical: tomato
+    aliases: [tomato, टोमॅटो, टमाटर, tamatar]
+  - id: soybean
+    canonical: soybean
+    aliases: [soybean, सोयाबीन, soyabean]
+  - id: wheat
+    canonical: wheat
+    aliases: [wheat, गहू, गेहूं, gahu]
+  - id: jowar
+    canonical: jowar
+    aliases: [jowar, ज्वारी, jwari]
+  - id: gram
+    canonical: gram
+    aliases: [gram, हरभरा, चना, harbhara, chana]
+  - id: cotton
+    canonical: cotton
+    aliases: [cotton, कापूस, कपास, kapus]
+  - id: pomegranate
+    canonical: pomegranate
+    aliases: [pomegranate, डाळिंब, अनार, dalimb, anar]
+  - id: quintal
+    canonical: quintal
+    aliases: [quintal, क्विंटल, quintals]
+    conversion_to_quintal: 1
+  - id: kilogram
+    canonical: kilogram
+    aliases: [kg, kilo, kilogram, किलो, किलोग्राम]
+    conversion_to_quintal: 0.01
+  - id: tonne
+    canonical: tonne
+    aliases: [ton, tonne, टन]
+    conversion_to_quintal: 10
+  - id: market_rate
+    canonical: market_rate
+    aliases: [दर, भाव, bhav, rate, price, किंमत]
+  - id: market
+    canonical: market
+    aliases: [मंडी, मंडई, mandi, market]
+  - id: nearby
+    canonical: nearby
+    aliases: [जवळपास, जवळ, javalpass, nearby, near]
+  - id: today
+    canonical: today
+    aliases: [आज, aaj, today]

@@ -1,0 +1,42 @@
+language: mr
+entries:
+  - id: term.net_profit
+    kind: term
+    keywords: [निव्वळ नफा, निव्वळ परतावा, net profit]
+    text: "निव्वळ कमाई म्हणजे मंडीच्या भावातून वाहतूक, बाजार शुल्क आणि पिकाची घट वजा केल्यानंतरची रक्कम."
+  - id: term.modal_price
+    kind: term
+    keywords: [मोडल भाव, modal price]
+    text: "मोडल भाव म्हणजे मंडीत सर्वाधिक वेळा नोंदवला गेलेला भाव."
+  - id: term.freshness
+    kind: term
+    keywords: [ताजेपणा, ताजा, जुना अहवाल]
+    text: "ताजेपणा अहवाल किती अलीकडचा आहे ते दाखवतो: FRESH, STALE, OLD किंवा NO_REPORT."
+  - id: term.assumptions
+    kind: term
+    keywords: [गृहीतके, अंदाज]
+    text: "वाहतूक दर आणि पिकाची घट ही गृहीतके आहेत. डेमो गृहीतके DEMO म्हणून दाखवली जातात."
+  - id: help.home
+    kind: help
+    keywords: [मुख्य पान, सुरुवात, शेतकरी]
+    text: "मुख्य पानावर पीक, मात्रा आणि ठिकाण निवडा. जवळच्या मंड्यांची तुलना दिसेल."
+  - id: help.result
+    kind: help
+    keywords: [निकाल, शिफारस, क्रमवारी]
+    text: "निकालाचे पान अंदाजे निव्वळ परताव्यानुसार मंड्यांची क्रमवारी दाखवते."
+  - id: help.explorer
+    kind: help
+    keywords: [भाव शोधक, नकाशा, मंडी]
+    text: "भाव शोधक मंड्यांचे नोंदवलेले भाव आणि ताजेपणा दाखवतो."
+  - id: help.insights
+    kind: help
+    keywords: [अंतर्दृष्टी, हंगाम, पीक]
+    text: "अंतर्दृष्टीमध्ये भावाचा कल, हंगामी पद्धत आणि पिकाच्या नफ्याची श्रेणी दिसते."
+  - id: help.settings
+    kind: help
+    keywords: [सेटिंग्ज, भाषा, ठिकाण]
+    text: "सेटिंग्जमध्ये भाषा आणि अॅपच्या पसंती निवडा."
+  - id: help.offline
+    kind: help
+    keywords: [ऑफलाइन, इंटरनेट, जोडणी]
+    text: "ऑफलाइन असताना आधीचे निकाल वाचता येतात. जोडणी झाल्यावर नवीन प्रश्न पाठवा."
