@@ -9,7 +9,7 @@
 - [x] Part 6 - Android farmer app
 - [x] Part 7 - Integration and connection logic
 - [x] Part 8 - Docker and agent handoff
-- [ ] Part 9 - Full system test
+- [x] Part 9 - Full system test
 - [ ] Part 10 - Android build artifact
 - [ ] Part 11 - Final polish and README
 
@@ -58,4 +58,9 @@ Part 8 added backend and web container images, Compose services with health
 checks and health-based dependencies, persistent volumes, startup seeding,
 runtime browser API configuration, development overrides, CI workflow, and
 the Docker handoff guide.
+
+Part 9 added the black-box E2E checker, consistent FastAPI validation error
+responses, and the measured testing report. Backend, web, and contract checks
+pass; Docker/E2E and Android validation remain environment-blocked when their
+required runtimes are unavailable.
 

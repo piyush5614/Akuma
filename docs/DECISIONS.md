@@ -90,3 +90,11 @@
 - CI runs backend and web checks independently; Android remains locally
     unverified until a JDK/Android SDK environment is available.
 
+## Part 9
+
+- The E2E checker validates the response envelope, five recommendation
+    quantities, descending net-return ranking, all public/admin routes, all
+    three language outputs, CORS preflight, and the common validation error body.
+- FastAPI request validation now uses the documented `{code, message, details}`
+    shape rather than the framework default.
+

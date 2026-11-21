@@ -5,6 +5,7 @@ from typing import Annotated
 
 import jwt
 from fastapi import Depends, FastAPI, File, HTTPException, Query, UploadFile
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -67,6 +68,11 @@ def mandi_view(mandi: dict, crop_id: str) -> dict:
 @app.exception_handler(HTTPException)
 async def http_error_handler(_, exc: HTTPException):
     return JSONResponse(status_code=exc.status_code, content=ErrorResponse(code="HTTP_ERROR", message=str(exc.detail), details={}).model_dump(mode="json"))
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_error_handler(_, exc: RequestValidationError):
+    return JSONResponse(status_code=422, content=ErrorResponse(code="VALIDATION_ERROR", message="Request validation failed", details={"errors": exc.errors()}).model_dump(mode="json"))
 
 
 @app.get("/api/v1/health")
