@@ -83,7 +83,7 @@ class ChatOrchestrator:
         tool_name, args = self._tool_request(intent, message, context)
         if tool_name is None:
             return OrchestrationResult(self._fallback_text(language), language, "devanagari" if language != "en" else "latin", intent.intent, (), True, False)
-        key = json.dumps([tool_name, args, context.model_dump(mode="json"), language], sort_keys=True)
+        key = json.dumps([tool_name, args, context.model_dump(mode="json")], sort_keys=True, default=str) + language
         result = self.cache.get(key)
         if result is None:
             result = self.tools.invoke(tool_name, args, context)
@@ -152,7 +152,10 @@ class ChatOrchestrator:
             first = result.get("recommendations", [{}])[0]
             return f"{first.get('name', 'No mandi')} has the best estimated net return, ₹{first.get('costs', {}).get('net_per_quintal_inr', '0')} per quintal. Data is {first.get('freshness', 'unknown')}."
         if intent == "sell_or_wait":
-            return f"{result.get('reason', {}).get(language, result.get('disclaimer', 'Guidance, not a guarantee'))} Guidance, not a guarantee."
+            reason = result.get("reason", {})
+            if hasattr(reason, "model_dump"):
+                reason = reason.model_dump()
+            return f"{reason.get(language, result.get('disclaimer', 'Guidance, not a guarantee'))} Guidance, not a guarantee."
         if intent in {"term_meaning", "app_help"}:
             return result.get("text") or self._fallback_text(language)
         return self._fallback_text(language)

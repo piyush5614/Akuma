@@ -4,7 +4,7 @@
 - [x] Part 1 - Contract, schemas, glossary and knowledge base
 - [x] Part 2 - Language layer
 - [x] Part 3 - Orchestrator, providers, tools, grounding and safety
-- [ ] Part 4 - API endpoints, sessions and limits
+- [x] Part 4 - API endpoints, sessions and limits
 - [ ] Part 5 - Android chat feature
 - [ ] Part 6 - Dashboard add-on
 - [ ] Part 7 - Evaluation, integration and docs
@@ -56,4 +56,17 @@ redaction for phone, identity, and bank data. Rules mode remains network-free.
 
 The focused orchestrator suite has 7 passing tests, and the full backend suite
 has 81 passing tests. Public endpoint migration, sessions, rate limits, and
-Android/web wiring remain deferred to Parts 4-6.
+Android/web wiring were deferred to the following parts.
+
+## Part 4 result
+
+Migrated `POST /api/v1/chat` to accept the Saathi contract while retaining the
+legacy request shape for existing clients. Added 30-minute in-memory sessions
+that retain only crop, quantity, and last recommendation context, per-device
+rate limiting with retry hints, request IDs, localized starters, and feedback
+acceptance storage. The new response includes reply language/script, grounding,
+fallback, tool, demo, and request metadata.
+
+The chat API tests have 2 passing cases, the session/rate-limit tests have 3
+passing cases, and the full backend suite has 86 passing tests. Persistent
+session/feedback storage and dashboard analytics remain later hardening work.

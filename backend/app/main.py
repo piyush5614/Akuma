@@ -4,7 +4,7 @@ from decimal import Decimal
 from typing import Annotated
 
 import jwt
-from fastapi import Depends, FastAPI, File, HTTPException, Query, UploadFile
+from fastapi import Depends, FastAPI, File, HTTPException, Query, Request, UploadFile
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -13,8 +13,11 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from .core.config import settings
 from .schemas import (
     AdminSettings,
+    ChatFeedbackRequest,
+    ChatFeedbackResponse,
     ChatRequest,
     ChatResponse,
+    ChatStarter,
     Crop,
     ErrorResponse,
     LoginRequest,
@@ -24,9 +27,15 @@ from .schemas import (
     RecommendRequest,
     RecommendResponse,
     RegionPrice,
+    SaathiChatRequest,
+    SaathiChatResponse,
     Trend,
 )
 from .services.chat import RuleBasedChatProvider
+from .services.chat_orchestrator import ChatOrchestrator
+from .services.chat_rate_limit import ChatRateLimiter
+from .services.chat_sessions import ChatSessionStore
+from .services.chat_tools import ToolContext
 from .services.freshness import freshness
 from .services.pricing import calculate_costs, haversine_km
 from .services.sell_wait import decide
@@ -36,6 +45,10 @@ app = FastAPI(title="FairFarm API", version=settings.api_version)
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 bearer = HTTPBearer(auto_error=False)
 chat_provider = RuleBasedChatProvider()
+saathi_orchestrator = ChatOrchestrator()
+chat_sessions = ChatSessionStore()
+chat_rate_limiter = ChatRateLimiter()
+chat_feedback: list[dict[str, str | None]] = []
 admin_settings = AdminSettings(road_factor=settings.road_factor, transport_rate_per_quintal_km=settings.transport_rate, fee_pct=settings.fee_pct, shrinkage_pct_by_crop={"onion": Decimal("0.02"), "tomato": Decimal("0.03"), "soybean": Decimal("0.01")})
 
 
@@ -160,8 +173,85 @@ def regions(crop_id: str):
 
 
 @app.post("/api/v1/chat")
-def chat(request: ChatRequest):
-    return envelope(ChatResponse(**chat_provider.answer(request.message, request.language)))
+def chat(request: SaathiChatRequest | ChatRequest, http_request: Request):
+    if isinstance(request, ChatRequest):
+        return envelope(ChatResponse(**chat_provider.answer(request.message, request.language)))
+
+    client_key = request.client.device_id or (http_request.client.host if http_request.client else "unknown")
+    allowed, retry_after = chat_rate_limiter.allow(client_key)
+    if not allowed:
+        response = error("RATE_LIMITED", "Too many chat requests", {"retry_after_seconds": retry_after})
+        response.headers["Retry-After"] = str(retry_after)
+        return response
+
+    session_id, stored = chat_sessions.start_or_get(request.session_id)
+    context = request.context.model_copy(
+        update={
+            "crop_id": request.context.crop_id or stored.get("crop_id"),
+            "quantity_quintal": request.context.quantity_quintal or stored.get("quantity_quintal"),
+            "last_recommendation_id": request.context.last_recommendation_id or stored.get("last_recommendation_id"),
+        }
+    )
+    result = saathi_orchestrator.answer(
+        request.message,
+        ToolContext(lat=context.lat, lng=context.lng, crop_id=context.crop_id, quantity_quintal=context.quantity_quintal),
+        request.ui_language,
+    )
+    chat_sessions.update(
+        session_id,
+        crop_id=context.crop_id,
+        quantity_quintal=context.quantity_quintal,
+        last_recommendation_id=context.last_recommendation_id,
+    )
+    request_id = http_request.headers.get("X-Request-ID") or os.urandom(8).hex()
+    response = SaathiChatResponse(
+        session_id=session_id,
+        reply={"text": result.text, "speak_text": result.text, "language": result.language, "script": result.script},
+        cards=[],
+        chips=["Show today's price", "Should I sell now?"],
+        meta={
+            "intent": result.intent,
+            "tools_used": list(result.tools_used),
+            "data_as_of": as_of().isoformat(),
+            "is_demo": result.is_demo,
+            "confidence": 0.9 if result.grounded else 0.4,
+            "grounded": result.grounded,
+            "fallback_used": result.fallback_used,
+            "request_id": request_id,
+        },
+    )
+    return envelope(response)
+
+
+@app.get("/api/v1/chat/starters")
+def chat_starters(lang: str = Query("en", pattern="^(en|mr|hi)$")):
+    starters = {
+        "en": [
+            ChatStarter(label="Best nearby mandi", message="Which nearby mandi gives the best net return?"),
+            ChatStarter(label="Today's price", message="What is today's onion price?"),
+            ChatStarter(label="Sell or wait", message="Should I sell my onion now or wait?"),
+            ChatStarter(label="Explain net profit", message="What does net profit mean?"),
+        ],
+        "mr": [
+            ChatStarter(label="जवळची चांगली मंडी", message="जवळच्या कोणत्या मंडीत चांगला निव्वळ परतावा मिळेल?"),
+            ChatStarter(label="आजचा भाव", message="आज कांद्याचा भाव किती आहे?"),
+            ChatStarter(label="विकू की थांबू", message="कांदा आता विकू का थांबू?"),
+            ChatStarter(label="निव्वळ नफा", message="निव्वळ नफा म्हणजे काय?"),
+        ],
+        "hi": [
+            ChatStarter(label="पास की अच्छी मंडी", message="पास की कौन सी मंडी अच्छा शुद्ध रिटर्न देगी?"),
+            ChatStarter(label="आज का भाव", message="आज प्याज का भाव कितना है?"),
+            ChatStarter(label="बेचें या रुकें", message="प्याज अभी बेचूं या रुकूं?"),
+            ChatStarter(label="शुद्ध लाभ", message="शुद्ध लाभ का मतलब क्या है?"),
+        ],
+    }
+    return envelope(starters[lang])
+
+
+@app.post("/api/v1/chat/feedback")
+def chat_feedback_endpoint(request: ChatFeedbackRequest):
+    chat_feedback.append(request.model_dump())
+    return envelope(ChatFeedbackResponse(accepted=True))
 
 
 @app.post("/api/v1/auth/login")

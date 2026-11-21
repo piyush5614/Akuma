@@ -16,6 +16,7 @@ class ChatContext(APIModel):
 class ChatClient(APIModel):
     platform: Literal["android", "web"] = "android"
     app_version: str = "1.0.0"
+    device_id: str | None = Field(default=None, min_length=1, max_length=80)
 
 
 class SaathiChatRequest(APIModel):
