@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FairFarm design preview</title>
+    <style>
+      :root { --accent:#C8EE5A; --ink:#101410; --canvas:#F8F9F4; --surface:#FFF; --line:#E4E7DC; --muted:#667064; --success:#2E9E5B; --warning:#E0A100; --danger:#D64545; }
+      * { box-sizing:border-box; } body { margin:0; padding:40px; background:var(--canvas); color:var(--ink); font:16px Inter,Arial,sans-serif; }
+      main { max-width:1100px; margin:auto; } .eyebrow { color:var(--muted); text-transform:uppercase; letter-spacing:.12em; font-size:12px; }
+      h1 { font-size:48px; line-height:1; margin:8px 0 32px; } h2 { margin-top:40px; } .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:16px; }
+      .card { background:var(--surface); border:1px solid var(--line); border-radius:20px; padding:24px; } .swatch { height:80px; border-radius:12px; margin-bottom:12px; border:1px solid var(--line); }
+      button { min-height:48px; border:0; border-radius:999px; padding:0 20px; background:var(--ink); color:#fff; font-weight:700; } button.alt { background:var(--surface); color:var(--ink); border:1px solid var(--line); }
+      .chip { display:inline-flex; padding:8px 12px; border-radius:999px; background:var(--accent); margin:4px; font-size:13px; } .legend { display:flex; gap:16px; flex-wrap:wrap; }
+      .dot { display:inline-block; width:12px; height:12px; border-radius:50%; margin-right:6px; } .chart { height:130px; display:flex; align-items:end; gap:8px; border-bottom:1px solid var(--line); padding:12px; } .bar { flex:1; background:var(--accent); border-radius:8px 8px 0 0; }
+      @media (max-width:600px) { body { padding:24px; } h1 { font-size:38px; } }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="eyebrow">FairFarm / design preview</div>
+      <h1>More in your pocket.</h1>
+      <section class="grid">
+        <div class="card"><div class="swatch" style="background:#C8EE5A"></div><b>Lime accent</b><div>#C8EE5A</div></div>
+        <div class="card"><div class="swatch" style="background:#101410"></div><b>Ink</b><div>#101410</div></div>
+        <div class="card"><div class="swatch" style="background:#F8F9F4"></div><b>Canvas</b><div>#F8F9F4</div></div>
+        <div class="card"><div class="swatch" style="background:#FFFFFF"></div><b>Surface</b><div>#FFFFFF</div></div>
+      </section>
+      <h2>Controls</h2>
+      <div class="card"><button>Find best mandi →</button> <button class="alt">View details</button> <span class="chip">FRESH · 1 day</span> <span class="chip">₹2,314 / quintal</span></div>
+      <h2>Map pin legend</h2>
+      <div class="card legend"><span><i class="dot" style="background:#2E9E5B"></i>Fresh</span><span><i class="dot" style="background:#E0A100"></i>Stale</span><span><i class="dot" style="background:#D64545"></i>Old</span><span>◉ Approximate location</span></div>
+      <h2>Sample net-return chart</h2>
+      <div class="card"><div class="chart"><i class="bar" style="height:45%"></i><i class="bar" style="height:68%"></i><i class="bar" style="height:55%"></i><i class="bar" style="height:90%"></i><i class="bar" style="height:74%"></i></div></div>
+    </main>
+  </body>
+</html>

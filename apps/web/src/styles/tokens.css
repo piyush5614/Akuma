@@ -1,0 +1,21 @@
+:root {
+  --color-accent: #c8ee5a;
+  --color-ink: #101410;
+  --color-canvas: #f8f9f4;
+  --color-surface: #ffffff;
+  --color-line: #e4e7dc;
+  --color-muted: #667064;
+  --color-success: #2e9e5b;
+  --color-warning: #e0a100;
+  --color-danger: #d64545;
+  --radius-card: 20px;
+  --radius-pill: 999px;
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-xxl: 48px;
+  --font-latin: Inter, sans-serif;
+  --font-devanagari: "Noto Sans Devanagari", sans-serif;
+}

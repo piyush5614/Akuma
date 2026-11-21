@@ -20,3 +20,12 @@
 - API contract documentation is the source of truth for the Part 3 routers;
   no client or backend route was implemented in this part.
 
+## Part 2
+
+- `docs/design/tokens.json` is the canonical token source; web CSS and Android
+  theme values mirror it.
+- The design preview is static HTML so it can be reviewed without installing
+  the future web or Android applications.
+- The first Android theme files are intentionally standalone until the Gradle
+  project is created in Part 6.
+
