@@ -21,4 +21,5 @@ coverage/
 *.pyc
 *.db
 *.tsbuildinfo
+*.egg-info/
 
