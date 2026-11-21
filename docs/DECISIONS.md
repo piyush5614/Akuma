@@ -69,16 +69,16 @@
   preflight environment still lacks Java/JDK and Gradle. Android Studio/JDK 17
   is required for the first compile.
 
-  ## Part 7
+## Part 7
 
-  - Contract verification imports the backend FastAPI OpenAPI document and
-    extracts Retrofit annotations plus web client paths; query strings are
-    normalized before comparison.
-  - Only GET requests retry, with bounded exponential backoff; POST and PUT
-    requests execute once to avoid duplicate writes.
-  - Android compares semantic version strings from `/meta` and exposes a
-    user-facing update message when the installed app is below the backend
-    minimum version.
+- Contract verification imports the backend FastAPI OpenAPI document and
+  extracts Retrofit annotations plus web client paths; query strings are
+  normalized before comparison.
+- Only GET requests retry, with bounded exponential backoff; POST and PUT
+  requests execute once to avoid duplicate writes.
+- Android compares semantic version strings from `/meta` and exposes a
+  user-facing update message when the installed app is below the backend
+  minimum version.
 
 ## Part 8
 

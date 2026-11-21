@@ -13,6 +13,17 @@
 - [x] Part 10 - Android build artifact
 - [x] Part 11 - Final polish and README
 
+## Repair and redesign
+
+- [x] Part 0 - Baseline, hygiene and plan
+- [ ] Part 1 - Real data layer
+- [ ] Part 2 - API and backend structure
+- [ ] Part 3 - Design system v2
+- [ ] Part 4 - Web dashboard rebuild
+- [ ] Part 5 - Android app rebuild
+- [ ] Part 6 - Integration and end-to-end checks
+- [ ] Part 7 - Final QA, docs and release
+
 Part 0 created the required directory structure, baseline configuration files,
 starter documentation, and the master prompt.
 

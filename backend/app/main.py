@@ -55,6 +55,19 @@ saathi_events: list[dict[str, object]] = []
 admin_settings = AdminSettings(road_factor=settings.road_factor, transport_rate_per_quintal_km=settings.transport_rate, fee_pct=settings.fee_pct, shrinkage_pct_by_crop={"onion": Decimal("0.02"), "tomato": Decimal("0.03"), "soybean": Decimal("0.01")})
 
 
+def validate_production_secrets() -> None:
+    if settings.environment != "production":
+        return
+    weak_values = {"", "change-me", "replace-in-production", "development-secret"}
+    if settings.jwt_secret in weak_values or len(settings.jwt_secret) < 32:
+        raise RuntimeError("JWT_SECRET must contain at least 32 characters in production")
+    if settings.admin_password in weak_values or len(settings.admin_password) < 12:
+        raise RuntimeError("ADMIN_PASSWORD must contain at least 12 characters in production")
+
+
+validate_production_secrets()
+
+
 def envelope(data):
     return {"data": data, "data_as_of": as_of(), "is_demo": settings.is_demo}
 
@@ -346,7 +359,7 @@ def saathi_test(request: SaathiChatRequest, _=Depends(admin_required)):
 
 @app.post("/api/v1/auth/login")
 def login(request: LoginRequest):
-    if request.email != "admin@example.com" or request.password != os.getenv("ADMIN_PASSWORD", "change-me"):
+    if request.email != settings.admin_email or request.password != settings.admin_password:
         raise HTTPException(status_code=401, detail="Invalid credentials")
     token = jwt.encode({"sub": request.email, "role": "admin"}, settings.jwt_secret, algorithm="HS256")
     return envelope(LoginResponse(access_token=token, expires_in_seconds=3600))

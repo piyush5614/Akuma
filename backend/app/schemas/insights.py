@@ -3,7 +3,6 @@ from decimal import Decimal
 from pydantic import Field
 
 from .common import APIModel
-from .catalog import Crop
 
 
 class SeasonalityMonth(APIModel):

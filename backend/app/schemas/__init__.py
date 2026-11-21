@@ -1,7 +1,6 @@
 from .admin import AdminSettings, AdminSummary, ImportResult, Meta, QueryLogResponse
 from .auth import LoginRequest, LoginResponse
 from .catalog import Crop, Mandi, Trend, TrendPoint
-from .insights import NextCropRequest, NextCropSuggestion
 from .chat import (
     ChatCard,
     ChatClient,
@@ -29,7 +28,7 @@ from .common import (
     LocalizedText,
     ResponseMeta,
 )
-from .insights import Backtest, CropProfit, Seasonality, SeasonalityMonth
+from .insights import Backtest, CropProfit, NextCropRequest, NextCropSuggestion, Seasonality, SeasonalityMonth
 from .recommend import (
     CostBreakdown,
     MandiRecommendation,
@@ -69,6 +68,8 @@ __all__ = [
     "MandiRankingCard",
     "MandiRecommendation",
     "Meta",
+    "NextCropRequest",
+    "NextCropSuggestion",
     "QueryLogResponse",
     "RecommendRequest",
     "RecommendResponse",

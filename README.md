@@ -17,7 +17,7 @@ From the repository root on Windows:
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-pip install -r backend\requirements.txt
+pip install -e backend
 python backend\scripts\seed_demo.py
 python -m uvicorn backend.app.main:app --reload --port 8000
 ```
