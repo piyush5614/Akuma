@@ -10,13 +10,13 @@ cleartext access for the emulator.
 - Android Studio with JDK 17 and an Android SDK at API 35.
 - An emulator uses `http://10.0.2.2:8000/api/v1/`; a physical phone needs the
   computer LAN address in `gradle.properties`.
-- The current environment has `adb` but no Java or Gradle, so
-  `gradlew.bat testDebugUnitTest lintDebug` could not be run here.
+- The verified local toolchain uses JDK 17, Android SDK API 35, and Gradle
+  8.14.3.
 
 ## Run and build
 
 Open `apps/android` in Android Studio and sync Gradle. Start the backend on port
-8000, then run the `app` configuration. Build with:
+8000, then run the `app` configuration. Build and validate with:
 
 ```text
 gradlew.bat testDebugUnitTest lintDebug
@@ -24,8 +24,9 @@ gradlew.bat assembleDebug
 adb install -r app/build/outputs/apk/debug/app-debug.apk
 ```
 
-The source includes the wrapper properties and a guarded Windows entry point;
-Android Studio can regenerate the wrapper JAR when syncing the project.
+The checked-in Gradle wrapper is usable on Windows. The Part 10 verification
+completed `assembleDebug`, `testDebugUnitTest`, and `lintDebug`; the generated
+debug APK is copied to `artifacts/FairFarm-debug.apk`.
 
 ## Permissions and troubleshooting
 

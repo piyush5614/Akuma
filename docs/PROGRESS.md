@@ -10,7 +10,7 @@
 - [x] Part 7 - Integration and connection logic
 - [x] Part 8 - Docker and agent handoff
 - [x] Part 9 - Full system test
-- [ ] Part 10 - Android build artifact
+- [x] Part 10 - Android build artifact
 - [ ] Part 11 - Final polish and README
 
 Part 0 created the required directory structure, baseline configuration files,
@@ -46,8 +46,7 @@ authenticated backend route.
 Part 6 added the Android Gradle/Compose project, shared theme, Retrofit API
 models, repository/ViewModel boundary, farmer home/result flow, bottom
 navigation screens, offline/error indicators, location permissions, and
-debug/release network policy. Android compilation could not be run because
-Java/JDK and Gradle are unavailable in this environment.
+debug/release network policy.
 
 Part 7 added the OpenAPI contract checker, GET-only retry/backoff and timeout
 behavior, POST no-retry behavior, Android metadata compatibility checks,
@@ -60,7 +59,11 @@ runtime browser API configuration, development overrides, CI workflow, and
 the Docker handoff guide.
 
 Part 9 added the black-box E2E checker, consistent FastAPI validation error
-responses, and the measured testing report. Backend, web, and contract checks
-pass; Docker/E2E and Android validation remain environment-blocked when their
-required runtimes are unavailable.
+responses, and the measured testing report.
+
+Part 10 completed Android build verification with JDK 17, Android SDK API 35,
+and Gradle 8.14.3. `assembleDebug`, `testDebugUnitTest`, and `lintDebug`
+passed, and the debug APK was verified with Android `aapt` and copied to
+`artifacts/FairFarm-debug.apk`. Docker image builds remain unverified when the
+Docker daemon is unavailable.
 

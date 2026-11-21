@@ -98,3 +98,14 @@
 - FastAPI request validation now uses the documented `{code, message, details}`
     shape rather than the framework default.
 
+## Part 10
+
+- Android builds are verified with JDK 17, Android SDK API 35, and Gradle
+  8.14.3 using the checked-in Gradle wrapper.
+- `assembleDebug`, `testDebugUnitTest`, and `lintDebug` all pass. The generated
+  APK is copied to `artifacts/FairFarm-debug.apk` and its package metadata was
+  verified with `aapt`.
+- Gradle reports an unchecked ViewModel factory cast and a native library that
+  cannot be stripped; neither prevents the debug build. Docker image builds
+  remain unverified when the Docker daemon is unavailable.
+

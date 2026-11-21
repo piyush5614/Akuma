@@ -9,6 +9,7 @@ node_modules/
 dist/
 build/
 .gradle/
+.gradle-user*/
 local.properties
 *.apk
 artifacts/*
