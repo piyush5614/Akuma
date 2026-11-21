@@ -18,7 +18,9 @@ The E2E command targets `FAIRFARM_API_URL` (default
 - Backend: 10 tests passed.
 - Web: 2 tests passed; typecheck, lint, and build passed.
 - Contract checker: passed with 6 client operations.
-- Android: not run; Java/JDK and Gradle are unavailable in the current environment.
+- Android: `testDebugUnitTest`, `lintDebug`, and `assembleDebug` passed with
+  JDK 17, Android SDK API 35, and Gradle 8.14.3; APK metadata was verified
+  with `aapt`.
 - Docker/E2E: blocked when Docker Desktop is not running.
 
 ## Manual smoke checklist
