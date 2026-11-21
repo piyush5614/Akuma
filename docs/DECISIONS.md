@@ -41,3 +41,12 @@
 - Async API tests use httpx ASGI transport because the installed Starlette
   TestClient is incompatible with the installed httpx release.
 
+## Part 4
+
+- SQLite is the local seed target and is ignored from Git; deployment can point
+  `DATABASE_PATH` at a persistent database location.
+- Demo generation uses fixed seed `20261121`, stable row IDs, and replaces only
+  `DEMO` records so imported `AGMARKNET` records survive reseeding.
+- Generated demo history intentionally contains approximately 3.5% missing
+  reports to exercise `NO_REPORT` and varied freshness behavior.
+

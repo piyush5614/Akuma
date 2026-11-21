@@ -17,4 +17,5 @@ artifacts/*
 .vscode/
 coverage/
 *.pyc
+*.db
 

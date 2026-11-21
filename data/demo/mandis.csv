@@ -1,0 +1,26 @@
+id,name,district,state,lat,lng,approximate_location,is_demo
+pune,Pune,Pune,Maharashtra,18.5204,73.8567,1,1
+nashik,Nashik,Nashik,Maharashtra,19.9975,73.7898,1,1
+nagpur,Nagpur,Nagpur,Maharashtra,21.1458,79.0882,1,1
+solapur,Solapur,Solapur,Maharashtra,17.6599,75.9064,1,1
+kolhapur,Kolhapur,Kolhapur,Maharashtra,16.705,74.2433,1,1
+sangli,Sangli,Sangli,Maharashtra,16.8524,74.5815,1,1
+satara,Satara,Satara,Maharashtra,17.6805,74.0183,1,1
+ahmednagar,Ahmednagar,Ahmednagar,Maharashtra,19.0948,74.748,1,1
+aurangabad,Aurangabad,Aurangabad,Maharashtra,19.8762,75.3433,1,1
+jalgaon,Jalgaon,Jalgaon,Maharashtra,21.0077,75.5626,1,1
+akola,Akola,Akola,Maharashtra,20.7002,77.0082,1,1
+amravati,Amravati,Amravati,Maharashtra,20.9374,77.7796,1,1
+beed,Beed,Beed,Maharashtra,18.9891,75.7601,1,1
+buldhana,Buldhana,Buldhana,Maharashtra,20.5293,76.1842,1,1
+dhule,Dhule,Dhule,Maharashtra,20.9042,74.7749,1,1
+latur,Latur,Latur,Maharashtra,18.4088,76.5604,1,1
+nanded,Nanded,Nanded,Maharashtra,19.1383,77.321,1,1
+parbhani,Parbhani,Parbhani,Maharashtra,19.26,76.776,1,1
+hingoli,Hingoli,Hingoli,Maharashtra,19.7147,77.142,1,1
+washim,Washim,Washim,Maharashtra,20.111,77.133,1,1
+yavatmal,Yavatmal,Yavatmal,Maharashtra,20.3899,78.1307,1,1
+wardha,Wardha,Wardha,Maharashtra,20.7453,78.6022,1,1
+chandrapur,Chandrapur,Chandrapur,Maharashtra,19.9615,79.2961,1,1
+ratnagiri,Ratnagiri,Ratnagiri,Maharashtra,16.9902,73.312,1,1
+nanded-rural,Nanded Rural,Nanded Rural,Maharashtra,19.05,77.25,1,1

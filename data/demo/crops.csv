@@ -1,0 +1,9 @@
+id,name_en,name_mr,name_hi,perishability
+onion,Onion,कांदा,प्याज,high
+tomato,Tomato,टोमॅटो,टमाटर,high
+soybean,Soybean,सोयाबीन,सोयाबीन,low
+wheat,Wheat,गहू,गेहूं,low
+jowar,Jowar,ज्वारी,ज्वार,low
+gram,Gram,हरभरा,चना,low
+cotton,Cotton,कापूस,कपास,low
+pomegranate,Pomegranate,डाळिंब,अनार,medium

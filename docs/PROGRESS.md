@@ -4,7 +4,7 @@
 - [x] Part 1 - Specification and API contract
 - [x] Part 2 - Design system and screen specs
 - [x] Part 3 - Backend
-- [ ] Part 4 - Demo data and seeding
+- [x] Part 4 - Demo data and seeding
 - [ ] Part 5 - Web dashboard
 - [ ] Part 6 - Android farmer app
 - [ ] Part 7 - Integration and connection logic
@@ -31,4 +31,9 @@ sell-or-wait rules, rule-based chat provider, JWT admin protection, CORS, and
 focused unit/API tests. Persistent database models, migrations, and realistic
 demo seeding are intentionally deferred to Part 4 where they can be built
 against the same service interfaces.
+
+Part 4 added deterministic SQLite schema/seeding with 8 crops, 25 approximate
+Maharashtra mandis, two years of daily price and arrival history with gaps,
+DEMO crop assumptions, and an idempotent demo admin. The Agmarknet importer
+validates required columns, preserves provenance, and rejects changed exports.
 
