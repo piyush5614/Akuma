@@ -1,7 +1,7 @@
 # FairFarm progress
 
 - [x] Part 0 - Preflight and scaffold
-- [ ] Part 1 - Specification and API contract
+- [x] Part 1 - Specification and API contract
 - [ ] Part 2 - Design system and screen specs
 - [ ] Part 3 - Backend
 - [ ] Part 4 - Demo data and seeding
@@ -14,5 +14,10 @@
 - [ ] Part 11 - Final polish and README
 
 Part 0 created the required directory structure, baseline configuration files,
-starter documentation, and the master prompt. No application behavior exists yet.
+starter documentation, and the master prompt.
+
+Part 1 documented the architecture, data model, freshness/provenance rules,
+and v1 API contract. Pydantic v2 request and response schemas are importable
+under `backend/app/schemas/`. API routers and runtime behavior are intentionally
+deferred to Part 3.
 

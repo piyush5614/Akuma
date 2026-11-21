@@ -11,3 +11,12 @@
   the available interpreter; compatibility must be verified when backend work begins.
 - The initial scaffold uses `.gitkeep` for otherwise-empty required directories.
 
+## Part 1
+
+- API responses use a generic `data`, `data_as_of`, and `is_demo` envelope;
+  errors use `code`, `message`, and `details`.
+- Pydantic v2 schemas use `Decimal` for INR and quantity values to avoid
+  floating-point money calculations.
+- API contract documentation is the source of truth for the Part 3 routers;
+  no client or backend route was implemented in this part.
+
