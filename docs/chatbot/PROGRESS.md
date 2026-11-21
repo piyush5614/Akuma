@@ -6,7 +6,7 @@
 - [x] Part 3 - Orchestrator, providers, tools, grounding and safety
 - [x] Part 4 - API endpoints, sessions and limits
 - [x] Part 5 - Android chat feature
-- [ ] Part 6 - Dashboard add-on
+- [x] Part 6 - Dashboard add-on
 - [ ] Part 7 - Evaluation, integration and docs
 
 ## Part 0 result
@@ -80,3 +80,16 @@ the Compose Ask panel with starter prompts, send, loading, and clear-chat
 controls. The Android client still uses the existing manual location fallback.
 Room persistence, voice input/output, native data cards, and GPS context are
 explicitly deferred rather than presented as complete.
+
+## Part 6 result
+
+Added authenticated Saathi admin metrics and test-console endpoints backed by
+in-memory chat events and feedback, including language, intent, fallback,
+refusal, grounding, and rating summaries. Added the web Saathi dashboard,
+navigation entry, route, typed API client methods, and localized navigation
+labels. Backend API tests cover both admin endpoints.
+
+The focused chat API suite has 3 passing tests, Ruff passes, and the web
+typecheck, lint, Vitest suite, and production build pass. Metrics and chat
+events remain in-memory; persistent analytics are deferred to a later
+hardening step.

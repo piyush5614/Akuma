@@ -46,3 +46,20 @@ async def test_chat_starters_feedback_and_validation(client):
     invalid = await client.post("/api/v1/chat", json={"message": ""})
     assert invalid.status_code == 422
     assert invalid.json()["code"] == "VALIDATION_ERROR"
+
+
+@pytest.mark.asyncio
+async def test_admin_saathi_metrics_and_console(client):
+    login = await client.post("/api/v1/auth/login", json={"email": "admin@example.com", "password": "change-me"})
+    token = login.json()["data"]["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
+    metrics = await client.get("/api/v1/admin/saathi/metrics", headers=headers)
+    assert metrics.status_code == 200
+    assert "fallback_rate" in metrics.json()["data"]
+    console = await client.post(
+        "/api/v1/admin/saathi/test",
+        headers=headers,
+        json={"message": "nearby mandi for onion", "context": {"lat": 18.52, "lng": 73.86, "crop_id": "onion"}},
+    )
+    assert console.status_code == 200
+    assert console.json()["data"]["tools_used"] == ["find_best_mandis"]

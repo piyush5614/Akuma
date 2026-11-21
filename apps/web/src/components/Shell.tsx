@@ -1,11 +1,11 @@
-import { BarChart3, Database, LayoutDashboard, Map, Search, Settings, List } from "lucide-react";
+import { BarChart3, Bot, Database, LayoutDashboard, Map, Search, Settings, List } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import type { Language } from "../api/client";
 import { messages } from "../i18n/messages";
 
 const links = [
   ["/", "overview", LayoutDashboard], ["/explorer", "explorer", Search], ["/regions", "regions", Map],
-  ["/insights", "insights", BarChart3], ["/data", "data", Database], ["/settings", "settings", Settings], ["/queries", "queries", List],
+  ["/insights", "insights", BarChart3], ["/saathi", "saathi", Bot], ["/data", "data", Database], ["/settings", "settings", Settings], ["/queries", "queries", List],
 ] as const;
 
 export function Shell({ children, language, setLanguage }: { children: React.ReactNode; language: Language; setLanguage: (language: Language) => void }) {

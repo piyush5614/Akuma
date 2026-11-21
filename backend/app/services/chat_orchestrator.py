@@ -22,6 +22,7 @@ class OrchestrationResult:
     grounded: bool
     fallback_used: bool
     is_demo: bool = True
+    tool_results: tuple[dict[str, Any], ...] = ()
 
 
 class TTLCache:
@@ -92,7 +93,7 @@ class ChatOrchestrator:
         grounded = self.grounding.validate(text, [result])
         if not grounded:
             text = self._fallback_text(language)
-        return OrchestrationResult(text, language, "devanagari" if language != "en" else "latin", intent.intent, (tool_name,), grounded, not grounded)
+        return OrchestrationResult(text, language, "devanagari" if language != "en" else "latin", intent.intent, (tool_name,), grounded, not grounded, tool_results=(result,))
 
     def _provider_answer(self, message: str, intent: IntentResult, language: str, context: ToolContext) -> OrchestrationResult:
         messages = [{"role": "system", "content": "Use only validated FairFarm tools for factual claims."}, {"role": "user", "content": message}]
@@ -115,10 +116,10 @@ class ChatOrchestrator:
                     used.append(name)
                     messages.append({"role": "tool", "content": json.dumps(tool_result)})
             if not text or not self.grounding.validate(text, tool_results):
-                return OrchestrationResult(self._fallback_text(language), language, "devanagari" if language != "en" else "latin", intent.intent, tuple(used), False, True)
-            return OrchestrationResult(text, language, "devanagari" if language != "en" else "latin", intent.intent, tuple(used), True, False)
+                return OrchestrationResult(self._fallback_text(language), language, "devanagari" if language != "en" else "latin", intent.intent, tuple(used), False, True, tool_results=tuple(tool_results))
+            return OrchestrationResult(text, language, "devanagari" if language != "en" else "latin", intent.intent, tuple(used), True, False, tool_results=tuple(tool_results))
         except (ProviderUnavailable, ValueError, json.JSONDecodeError):
-            return OrchestrationResult(self._fallback_text(language), language, "devanagari" if language != "en" else "latin", intent.intent, tuple(used), False, True)
+            return OrchestrationResult(self._fallback_text(language), language, "devanagari" if language != "en" else "latin", intent.intent, tuple(used), False, True, tool_results=tuple(tool_results))
 
     def _complete_with_timeout(self, messages: list[dict[str, str]]) -> ProviderResult:
         executor = ThreadPoolExecutor(max_workers=1)

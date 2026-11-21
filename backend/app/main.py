@@ -49,6 +49,7 @@ saathi_orchestrator = ChatOrchestrator()
 chat_sessions = ChatSessionStore()
 chat_rate_limiter = ChatRateLimiter()
 chat_feedback: list[dict[str, str | None]] = []
+saathi_events: list[dict[str, object]] = []
 admin_settings = AdminSettings(road_factor=settings.road_factor, transport_rate_per_quintal_km=settings.transport_rate, fee_pct=settings.fee_pct, shrinkage_pct_by_crop={"onion": Decimal("0.02"), "tomato": Decimal("0.03"), "soybean": Decimal("0.01")})
 
 
@@ -204,6 +205,16 @@ def chat(request: SaathiChatRequest | ChatRequest, http_request: Request):
         last_recommendation_id=context.last_recommendation_id,
     )
     request_id = http_request.headers.get("X-Request-ID") or os.urandom(8).hex()
+    saathi_events.append(
+        {
+            "request_id": request_id,
+            "language": result.language,
+            "intent": result.intent,
+            "fallback_used": result.fallback_used,
+            "grounded": result.grounded,
+            "message": saathi_orchestrator.redact_for_log(request.message),
+        }
+    )
     response = SaathiChatResponse(
         session_id=session_id,
         reply={"text": result.text, "speak_text": result.text, "language": result.language, "script": result.script},
@@ -252,6 +263,58 @@ def chat_starters(lang: str = Query("en", pattern="^(en|mr|hi)$")):
 def chat_feedback_endpoint(request: ChatFeedbackRequest):
     chat_feedback.append(request.model_dump())
     return envelope(ChatFeedbackResponse(accepted=True))
+
+
+@app.get("/api/v1/admin/saathi/metrics")
+def saathi_metrics(_=Depends(admin_required)):
+    total = len(saathi_events)
+    language_counts = {language: sum(event["language"] == language for event in saathi_events) for language in ("en", "mr", "hi")}
+    intent_counts: dict[str, int] = {}
+    for event in saathi_events:
+        intent = str(event["intent"])
+        intent_counts[intent] = intent_counts.get(intent, 0) + 1
+    unanswered = [event["message"] for event in saathi_events if event["intent"] == "unknown"][-20:]
+    up = sum(item["rating"] == "up" for item in chat_feedback)
+    down = sum(item["rating"] == "down" for item in chat_feedback)
+    return envelope(
+        {
+            "messages_per_day": {"today": total},
+            "messages_by_language": language_counts,
+            "top_intents": intent_counts,
+            "fallback_rate": round(sum(bool(event["fallback_used"]) for event in saathi_events) / total, 3) if total else 0,
+            "refusal_rate": round(sum(event["intent"] in {"out_of_scope", "distress"} for event in saathi_events) / total, 3) if total else 0,
+            "grounding_failure_count": sum(not bool(event["grounded"]) for event in saathi_events),
+            "thumbs_ratio": {"up": up, "down": down},
+            "unanswered_questions": unanswered,
+            "provider": os.getenv("CHAT_PROVIDER", "rules"),
+            "mode": os.getenv("CHAT_MODE", "auto"),
+        }
+    )
+
+
+@app.post("/api/v1/admin/saathi/test")
+def saathi_test(request: SaathiChatRequest, _=Depends(admin_required)):
+    result = saathi_orchestrator.answer(
+        request.message,
+        ToolContext(
+            lat=request.context.lat,
+            lng=request.context.lng,
+            crop_id=request.context.crop_id,
+            quantity_quintal=request.context.quantity_quintal,
+        ),
+        request.ui_language,
+    )
+    return envelope(
+        {
+            "reply": result.text,
+            "language": result.language,
+            "intent": result.intent,
+            "tools_used": list(result.tools_used),
+            "tool_results": list(result.tool_results),
+            "grounded": result.grounded,
+            "fallback_used": result.fallback_used,
+        }
+    )
 
 
 @app.post("/api/v1/auth/login")
