@@ -50,3 +50,13 @@
 - Generated demo history intentionally contains approximately 3.5% missing
   reports to exercise `NO_REPORT` and varied freshness behavior.
 
+## Part 5
+
+- The web app uses Vite, React, TypeScript, TanStack Query, React Router,
+  Lucide icons, and Vitest; `apps/web/package-lock.json` pins the install.
+- The API base URL is supplied by `VITE_API_URL`, defaulting to the documented
+  local backend URL for development.
+- `npm install` reported six transitive audit findings in the current package
+  graph; the dashboard build and tests pass, but dependency remediation should
+  be handled before production deployment.
+
