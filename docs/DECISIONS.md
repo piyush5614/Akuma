@@ -182,3 +182,10 @@
 - WebView startup and HTTP/resource failures show a readable retry screen
   instead of a blank white WebView.
 
+## Native Android app
+
+- The standalone Android project no longer uses a WebView or bundles web assets.
+- Native Compose screens call the existing FastAPI API through Retrofit and
+  kotlinx.serialization; clients do not duplicate backend pricing or ranking
+  calculations.
+

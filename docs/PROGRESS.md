@@ -49,6 +49,10 @@
   `localhost` API routing. The standalone APK now bundles the web build in
   Android assets, serves it from an app-local HTTP server, injects the backend
   API URL, and shows a retry/error page instead of a blank screen.
+- Replaced the standalone Android WebView wrapper with a native Jetpack Compose
+  app. The native build includes login, dashboard, explorer, regions, insights,
+  settings, and Saathi screens backed by Retrofit. The APK assembles and lints
+  successfully; live interaction requires a connected emulator or device.
 
 Part 0 created the required directory structure, baseline configuration files,
 starter documentation, and the master prompt.

@@ -1,11 +1,8 @@
 # FairFarm Android Application
 
-This folder is a complete Android Studio project. It wraps the existing FairFarm
-web application in a full-screen Android WebView, so all web routes, login,
-dashboard, maps, forms, data import, language controls, and chat behavior remain
-the same as the web app.
-
-The web source under `apps/web` is not included or modified by this project.
+This folder is a complete native Jetpack Compose Android Studio project.
+It provides FairFarm login, dashboard, market explorer, insights, settings,
+and Saathi screens using the FastAPI backend. It does not use a WebView.
 
 ## Requirements
 
