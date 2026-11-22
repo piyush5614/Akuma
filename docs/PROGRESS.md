@@ -53,6 +53,8 @@
   app. The native build includes login, dashboard, explorer, regions, insights,
   settings, and Saathi screens backed by Retrofit. The APK assembles and lints
   successfully; live interaction requires a connected emulator or device.
+- Android now opens directly on the dashboard. The login screen was removed
+  from the mobile app while remaining available in the web dashboard.
 
 Part 0 created the required directory structure, baseline configuration files,
 starter documentation, and the master prompt.

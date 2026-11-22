@@ -1,8 +1,9 @@
 # FairFarm Android Application
 
 This folder is a complete native Jetpack Compose Android Studio project.
-It provides FairFarm login, dashboard, market explorer, insights, settings,
-and Saathi screens using the FastAPI backend. It does not use a WebView.
+It opens directly to the FairFarm dashboard and provides market explorer,
+regions, insights, settings, and Saathi screens using the FastAPI backend.
+Android does not show a login screen. It does not use a WebView.
 
 ## Requirements
 
@@ -61,7 +62,7 @@ Android emulator `10.0.2.2` maps to the computer's localhost.
 3. Update `gradle.properties`:
 
 ```properties
-BASE_URL=http://<computer-ip>:8000/api/v1/
+BASE_URL=http://172.20.10.2:8000/api/v1/
 ```
 
 4. Sync Gradle and rebuild.

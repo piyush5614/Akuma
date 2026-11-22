@@ -76,21 +76,7 @@ fun FairFarmApp() {
     val model: FairFarmViewModel = viewModel()
     val state by model.state.collectAsState()
     val nav = rememberNavController()
-    var start by remember { mutableStateOf(if (model.isLoggedIn()) "main" else "login") }
-
-    if (start == "login") {
-        LoginScreen(
-            loading = state.loading,
-            error = state.error,
-            onLogin = { email, password ->
-                model.login(email, password) {
-                    start = "main"
-                }
-            }
-        )
-    } else {
-        MainShell(nav, model, state)
-    }
+    MainShell(nav, model, state)
 }
 
 @Composable
