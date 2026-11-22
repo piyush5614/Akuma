@@ -45,6 +45,10 @@
 - Demo seeding now generates one deterministic year of history and skips
   rewrites when an identical 25-mandi, 8-crop demo set already exists. This
   keeps reseeding idempotent without excessive CI disk usage.
+- Android white-screen root cause was external Vite-server dependency and
+  `localhost` API routing. The standalone APK now bundles the web build in
+  Android assets, serves it from an app-local HTTP server, injects the backend
+  API URL, and shows a retry/error page instead of a blank screen.
 
 Part 0 created the required directory structure, baseline configuration files,
 starter documentation, and the master prompt.

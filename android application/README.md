@@ -12,7 +12,6 @@ The web source under `apps/web` is not included or modified by this project.
 - Android Studio with JDK 17
 - Android SDK API 35
 - The FairFarm backend running on port 8000
-- The FairFarm Vite web app running on port 5173
 
 ## Open in Android Studio
 
@@ -40,14 +39,12 @@ Keep at least 5 GB free on D: for Android SDK, Gradle dependencies, and build
 artifacts. For a different disk or folder, update `org.gradle.user.home` and
 the `layout.buildDirectory` paths in the Gradle files.
 
-## Start the web app
+## Start the backend
 
 From the FairFarm repository root:
 
 ```powershell
 python -m uvicorn backend.app.main:app --host 0.0.0.0 --port 8000
-Set-Location apps\web
-npm run dev -- --host 0.0.0.0
 ```
 
 ## Emulator configuration
@@ -55,7 +52,6 @@ npm run dev -- --host 0.0.0.0
 The default `gradle.properties` uses:
 
 ```properties
-WEB_APP_URL=http://10.0.2.2:5173/
 BASE_URL=http://10.0.2.2:8000/api/v1/
 ```
 
@@ -68,12 +64,11 @@ Android emulator `10.0.2.2` maps to the computer's localhost.
 3. Update `gradle.properties`:
 
 ```properties
-WEB_APP_URL=http://<computer-ip>:5173/
 BASE_URL=http://<computer-ip>:8000/api/v1/
 ```
 
 4. Sync Gradle and rebuild.
-5. Allow TCP ports 5173 and 8000 through Windows Firewall.
+5. Allow TCP port 8000 through Windows Firewall.
 
 ## Build and install
 

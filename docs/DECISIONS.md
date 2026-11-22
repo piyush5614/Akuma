@@ -172,3 +172,13 @@
   demo counts without deleting and recreating price and arrival history when
   the 25-mandi, 8-crop demo structure is already present.
 
+## Android WebView startup
+
+- The standalone Android application serves the bundled web build locally from
+  port 4173. It no longer depends on a separately running Vite server.
+- Android injects `BASE_URL` as `window.__FAIRFARM_CONFIG__.API_URL`; the
+  emulator default remains `10.0.2.2:8000`, while physical phones use their
+  configured LAN backend IP.
+- WebView startup and HTTP/resource failures show a readable retry screen
+  instead of a blank white WebView.
+
